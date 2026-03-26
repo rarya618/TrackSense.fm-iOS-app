@@ -309,7 +309,6 @@
 				DEVELOPMENT_TEAM = W6Y57HU4MQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = TrackSense;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "This app requires access to your Apple Music library to access your statistics and display insights.";
@@ -345,7 +344,6 @@
 				DEVELOPMENT_TEAM = W6Y57HU4MQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = TrackSense;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "This app requires access to your Apple Music library to access your statistics and display insights.";
