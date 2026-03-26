@@ -1,19 +1,17 @@
 //
-//  QueueView.swift
+//  LyricsView.swift
 //  Resonate
 //
-//  Created by Russal Arya on 25/9/2025.
+//  Created by Russal Arya on 26/12/2025.
 //
 
 import SwiftUI
 //import MediaPlayer
 import MusicKit
 
-struct QueueView: View {
+struct LyricsView: View {
     let color: Color
     let bgColor: Color
-    
-    let queue = SystemMusicPlayer.shared.queue
 
     var body: some View {
         ScrollView {
@@ -23,7 +21,7 @@ struct QueueView: View {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .font(.system(size: 18))
                         
-                        Text("Unfortunately, you cannot access the System Queue in Resonate at this time")
+                        Text("Lyrics are not available in Resonate at this time")
                             .font(.system(size: 18))
                             .lineSpacing(4)
                     }
@@ -38,17 +36,20 @@ struct QueueView: View {
                         }
                     }
                 }
-                .padding(.top, 24)
+                .padding(.vertical, 24)
                 .padding(.horizontal, 20)
-                .padding(.bottom, 24)
-                .background(Color(.red.opacity(0.15)))
-                .cornerRadius(12)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.red.opacity(0.1))
+                        .stroke(Color.red.opacity(0.5), lineWidth: 1)
+                )
             }
             .padding(.horizontal)
         }
         .foregroundStyle(color)
         .background(bgColor)
-        .navigationTitle("Next in Queue")
+        .navigationTitle("Lyrics")
         .navigationBarTitleDisplayMode(.inline)
     }
 }

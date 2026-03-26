@@ -1,5 +1,5 @@
 //
-//  AddToPlaylist.swift
+//  NewPlaylist.swift
 //  Resonate
 //
 //  Created by Russal Arya on 6/11/2025.
@@ -8,132 +8,110 @@
 import SwiftUI
 import MusicKit
 
-struct AddToPlaylist: View {
-    let song: Song?
+struct NewPlaylist: View {
+    let songToAdd: Song?
+    let togglePlaylistsSheetVisible: () -> Void
+    let toggleNewPlaylistsSheetVisible: () -> Void
+    let color: Color
+    let bgColor: Color
     
-    @State private var errorMessage: String?
-    @State private var selectedPlaylist: Playlist?
+    @EnvironmentObject var overlayManager: OverlayManager
 
-    @State private var searchText = ""
+    @State private var name = ""
+    @State private var description = ""
     
     var body: some View {
-        ZStack {
-            ScrollView {
-                VStack {
-                    HStack(spacing: 12) {
-                        HStack(alignment: .center) {
-                            Image(systemName: "plus")
-                                .font(Font.system(size: 16, weight: .bold))
-                                .foregroundStyle(Color.resonateWhite)
-                                .frame(width: 36, height: 36)
-                        }
-                        .background(Color.resonatePurple)
-                        .cornerRadius(20)
-                        
-                        Text("New Playlist")
-                            .font(Font.system(size: 17, weight: .medium))
-                            .foregroundStyle(Color.resonatePurple)
-                        
-                        Spacer()
-                    }
-                    .padding(.vertical, 10)
-                    
-                    HStack {
-                        Text("All Playlists")
-                            .font(Font.system(size: 17, weight: .bold))
-                        Spacer()
-                    }
-                    
-                    PlaylistsList(
-                        setError: setError,
-                        selectPlaylist: selectPlaylist,
-                        onlyShowPersonalPlaylists: true
-                    )
+        ZStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 24) {
+                // Playlist name input
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Name")
+                        .font(.system(size: 17, weight: .semibold))
+                    TextField("Playlist name", text: $name)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .background(color.opacity(0.06))
+                        .cornerRadius(10)
                 }
-                .padding(.horizontal, 24)
-            }
-            
-            // 🟣 Overlay section
-            if let playlist = selectedPlaylist {
-                VStack {
-                    Spacer().frame(height: 16)
-                    HStack {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(Color.resonatePurple)
-                        Text("Added to \(playlist.name)")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(Color.resonatePurple)
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(Color.resonateWhite)
-                    .cornerRadius(12)
-                    .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
-                    
-                    Spacer()
+                
+                // Playlist description input
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Description (optional)")
+                        .font(.system(size: 17, weight: .semibold))
+                    TextEditor(text: $description)
+                        .scrollContentBackground(.hidden)
+                        .frame(height: 100)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .background(color.opacity(0.06))
+                        .cornerRadius(10)
                 }
-                .transition(.move(edge: .top).combined(with: .opacity))
-                .zIndex(1)
-            }
-
-            // 🔴 Optional error overlay
-            if let message = errorMessage {
-                VStack {
-                    Spacer().frame(height: 16)
-                    HStack {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundStyle(.red)
-                        Text(message)
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(.red)
+                
+                Spacer()
+                StandardButton(
+                    label: "Create",
+                    bgColor: color,
+                    color: bgColor,
+                    action: {
+                        createPlaylist()
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(Color.resonateWhite)
-                    .cornerRadius(12)
-                    .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
-                    
-                    Spacer()
-                }
-                .transition(.move(edge: .top).combined(with: .opacity))
-                .zIndex(1)
+                )
             }
+            .padding(.horizontal, 24)
         }
-        .navigationTitle("Add to a Playlist")
+        .navigationTitle("New Playlist")
         .navigationBarTitleDisplayMode(.inline)
-        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search for Playlists")
-    }
-    
-    func setError(error: String) {
-        errorMessage = error
     }
 
-    func selectPlaylist(playlist: Playlist) {
+    func createPlaylist() {
         Task {
             do {
-                if let song = song {
-                    try await MusicLibrary.shared.add(song, to: playlist)
-                    print("✅ Added \(song.title) to \(playlist.name)")
+                let playlist = try await MusicLibrary.shared.createPlaylist(
+                    name: name,
+                    description: description,
+                    authorDisplayName: "Resonate"
+                )
+                print("Created \(name)")
+                
+                toggleNewPlaylistsSheetVisible()
+                togglePlaylistsSheetVisible()
 
-                    await MainActor.run {
-                        withAnimation {
-                            selectedPlaylist = playlist
-                        }
+                await MainActor.run {
+                    withAnimation {
+                        overlayManager.showOverlay("\(name) created")
                     }
+                }
 
+                // Auto-hide overlay after 1.5 seconds
+                try? await Task.sleep(nanoseconds: 1_500_000_000)
+                await MainActor.run {
+                    withAnimation {
+                        overlayManager.showOverlay(nil)
+                    }
+                }
+                
+                if let song = songToAdd {
+                    addSongToPlaylist(
+                        song: song,
+                        playlist: playlist,
+                        setOverlayMessage: overlayManager.showOverlay,
+                        setErrorMessage: overlayManager.showError
+                    )
+                    
                     // Auto-hide overlay after 1.5 seconds
                     try? await Task.sleep(nanoseconds: 1_500_000_000)
                     await MainActor.run {
                         withAnimation {
-                            selectedPlaylist = nil
+                            overlayManager.showOverlay(nil)
                         }
                     }
                 }
+                
             } catch {
-                print("❌ Failed to add song to playlist: \(error)")
+                print("Failed to create playlist: \(error)")
                 await MainActor.run {
                     withAnimation {
-                        errorMessage = "Failed to add song"
+                        overlayManager.showError("Failed to create playlist")
                     }
                 }
 
@@ -141,10 +119,11 @@ struct AddToPlaylist: View {
                 try? await Task.sleep(nanoseconds: 2_000_000_000)
                 await MainActor.run {
                     withAnimation {
-                        errorMessage = nil
+                        overlayManager.showError(nil)
                     }
                 }
             }
         }
     }
 }
+

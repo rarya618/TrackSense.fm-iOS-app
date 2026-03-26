@@ -10,38 +10,34 @@ import MusicKit
 
 struct AlbumStatsView: View {
     let album: Album
+    var playCount: Int
+    var timePlayed: Double
     
     @State private var errorMessage: String?
+    @State private var tracks: MusicItemCollection<Track> = []
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("Stats")
-                .fontWeight(.bold)
-                .font(.system(size: 24))
-            VStack(spacing: 10) {
-//                HStack(spacing: 10) {
-//                    if let playCount = album.playCount {
-//                        StatView(title: "Plays", value: playCount.formatted())
-//                        
-//                        if let duration = album.duration {
-//                            let totalMinutes = (Double(playCount) * duration) / 60
-//                            StatView(title: "Minutes", value: Int(totalMinutes).formatted())
-//                        }
-//                    }
-//                }
-//                .frame(maxWidth: .infinity)
+        VStack(spacing: 10) {
+            HStack(spacing: 10) {
+                StatContainerView(title: "Plays", value: playCount.formatted())
                 
-                if let lastPlayed = album.lastPlayedDate {
-                    StatView(title: "Last played", value: lastPlayed.formatted())
-                }
-                
-                if let discoveredDate = album.libraryAddedDate {
-                    StatView(title: "Discovered", value: discoveredDate.formatted())
-                }
-                
-                if let releaseDate = album.releaseDate {
-                    StatView(title: "Release date", value: releaseDate.formatted())
-                }
+                let totalMinutes = timePlayed / 60
+                StatContainerView(title: "Minutes", value: Int(totalMinutes).formatted())
+            }
+            .frame(maxWidth: .infinity)
+            
+            StatContainerView(title: "Tracks", value: album.trackCount.formatted())
+            
+            if let lastPlayed = album.lastPlayedDate {
+                StatContainerView(title: "Last played", value: lastPlayed.formatted())
+            }
+            
+            if let discoveredDate = album.libraryAddedDate {
+                StatContainerView(title: "Discovered", value: discoveredDate.formatted())
+            }
+            
+            if let releaseDate = album.releaseDate {
+                StatContainerView(title: "Release date", value: releaseDate.formatted())
             }
         }
         .frame(maxWidth: .infinity)

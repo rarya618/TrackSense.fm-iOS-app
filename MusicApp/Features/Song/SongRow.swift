@@ -1,6 +1,6 @@
 //
 //  SongRow.swift
-//  MusicApp
+//  Resonate
 //
 //  Created by Russal Arya on 21/9/2025.
 //
@@ -10,24 +10,40 @@ import MusicKit
 
 struct SongRow: View {
     let song: Song
+    let toggleAddPlaylists: () -> Void
     let onTap: () -> Void
+    
+    @EnvironmentObject var overlayManager: OverlayManager
 
     var body: some View {
-        Button(action: onTap) {
-            HStack(spacing: 12) {
-                SongArtworkView(song: song, width: 50, height: 50, cornerRadius: 10)
-                VStack(alignment: .leading) {
-                    Text(song.title)
-                        .font(.headline)
-                        .foregroundColor(.resonatePurple)
-                    Text(song.artistName)
-                        .font(.subheadline)
-                        .foregroundColor(.resonateLightPurple)
-                }
-
-                Spacer()
-            }
+        MusicItemBlock(
+            artwork: song.artwork,
+            title: song.title,
+            artistName: song.artistName,
+            playCount: song.playCount,
+            removeSpacer: false,
+            removeEllipsis: false,
+//            menuItems: getMenuForSong(
+//                song,
+//                showMessage: { msg in await showMessage(msg) },
+//                showError: { msg in await showError(msg) },
+//                toggleAddPlaylists: toggleAddPlaylists
+//            )
+        ) {
+            onTap()
         }
-        .buttonStyle(.plain) // removes SwiftUI’s default button tint
+    }
+    
+    // MARK: - Show Overlays
+    func showMessage(_ message: String) async {
+        await displayMessage(message) { msg in
+            overlayManager.showOverlay(msg)
+        }
+    }
+
+    func showError(_ message: String) async {
+        await displayMessage(message) { msg in
+            overlayManager.showError(msg)
+        }
     }
 }

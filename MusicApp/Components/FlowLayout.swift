@@ -1,3 +1,11 @@
+//
+//  FlowLayout.swift
+//  MusicApp
+//
+//  Created by Russal Arya on 11/10/2025.
+//
+import SwiftUI
+
 struct FlowLayout: Layout {
     var spacing: CGFloat = 6
     var rowSpacing: CGFloat = 6

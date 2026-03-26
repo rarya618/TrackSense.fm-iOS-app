@@ -21,7 +21,7 @@ struct ArtistArtworkView: View {
                 .cornerRadius(cornerRadius)
         } else {
             Image(systemName: "music.note")
-                .frame(width: 50, height: 50)
+                .frame(width: width, height: height)
                 .foregroundColor(.customPurple)
                 .background(Color.customLightPurple)
                 .clipShape(RoundedRectangle(cornerRadius: 6))

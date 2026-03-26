@@ -5,6 +5,9 @@
 //  Created by Russal Arya on 12/10/2025.
 //
 
+import SwiftUI
+import AVKit
+import AVFoundation
 
 struct AirPlayPickerRepresentable: UIViewRepresentable {
     var tintColor: UIColor

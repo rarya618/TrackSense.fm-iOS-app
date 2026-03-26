@@ -1,3 +1,10 @@
+//
+//  NoteFromMeView.swift
+//  TrackSense
+//
+//  Created by Russal Arya on 25/3/2026.
+//
+
 import SwiftUI
 
 struct NoteFromMeView: View {
@@ -17,19 +24,25 @@ struct NoteFromMeView: View {
                     
                     Text("I am glad to have you here.")
                     
-                    Text("I built ")
-                        .foregroundColor(.primary)
-                    + Text("TrackSense")
-                        .bold()
-                        .foregroundColor(.primary)
-                    + Text(" because I wanted a better way to explore my own music journey and see how I can display it best to understand my listening habits.")
-                        .foregroundColor(.primary)
+                    Text({
+                        var s = AttributedString("I built TrackSense.fm because I wanted a better way to explore my own music journey and see how I can display it best to understand my listening habits.")
+                        if let range = s.range(of: "TrackSense.fm") {
+                            s[range].inlinePresentationIntent = .stronglyEmphasized
+                        }
+                        return s
+                    }())
+                    .foregroundColor(.primary)
                     
                     Text("It grew into something much bigger, with all these graphs and trends. And now, here we are!")
                     
-                    Text("To get your personal insights ready, I need your help with ")
-                    + Text("two").bold()
-                    + Text(" things:")
+                    Text({
+                        var s = AttributedString("To get your personal insights ready, I need your help with two things:")
+                        if let range = s.range(of: "two") {
+                            s[range].inlinePresentationIntent = .stronglyEmphasized
+                        }
+                        return s
+                    }())
+                    .foregroundColor(.primary)
                 }
                 .font(.body)
                 .foregroundColor(.primary)

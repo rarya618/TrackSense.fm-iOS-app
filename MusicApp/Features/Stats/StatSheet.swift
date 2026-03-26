@@ -1,5 +1,5 @@
 //
-//  TotalPlaysSheet 2.swift
+//  StatSheet.swift
 //  MusicApp
 //
 //  Created by Russal Arya on 21/11/2025.
@@ -17,7 +17,7 @@ struct StatSheet: View {
         NavigationStack {
             ScrollView {
                 VStack {
-                    VStack(alignment: .leading, spacing: 18) {
+                    VStack(alignment: .leading, spacing: 12) {
                         // MARK: - Chart Card
                         ChartCard(
                             title: "History over time",
@@ -29,14 +29,23 @@ struct StatSheet: View {
                         Text(historyDescription)
                             .font(.footnote)
                             .foregroundStyle(.secondary)
-                            .padding(.bottom, 30)
+                            .padding(.bottom, 24)
+                            .padding(.horizontal, 12)
                     }
                     
                     if let cloud = cloudData {
-                        TrendsCard(
-                            history: cloud.history,
-                            unitLabel: unitLabel
-                        )
+                        VStack(alignment: .leading, spacing: 12) {
+                            TrendsCard(
+                                history: cloud.history,
+                                unitLabel: unitLabel
+                            )
+                            
+                            Text("These insights summarize how your listening habits evolve – including daily growth, weekly momentum, consistency, and streaks – based on your cumulative data.")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                                .padding(.bottom, 24)
+                                .padding(.horizontal, 12)
+                        }
                     }
                 }
                 .padding(.horizontal, 20)

@@ -1,25 +1,44 @@
 //
-//  Card.swift
-//  MusicApp
+//  ChartCard.swift
+//  Resonate
 //
 //  Created by Russal Arya on 18/11/2025.
 //
 
-VStack(alignment: .leading, spacing: 10) {
-    Text("Hours Over Time")
-        .font(.title2.bold())
+import SwiftUI
 
-    if let cloud = cloudLibraryPlayedHoursData,
-       let history = cloud.history {
-        HistoryChart(history: history, hasValueProp: true)
-            .frame(height: 260)
-    } else {
-        Text("Cloud history unavailable")
-            .foregroundStyle(.secondary)
-            .frame(maxWidth: .infinity, alignment: .leading)
+struct ChartCard<T: CloudDecodable>: View {
+    let title: String
+    let cloudData: T?
+    var isSong: Bool = false
+    var hasValueProp: Bool = false
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(title)
+                .font(.system(size: 24, weight: .bold))
+                .padding(.horizontal, 20)
+
+            if let cloud = cloudData,
+               let history = cloud.history {
+                HistoryChart(
+                    history: history,
+                    isSong: isSong,
+                    hasValueProp: hasValueProp
+                )
+            } else {
+                Text("Cloud history unavailable")
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 20)
+            }
+        }
+        .padding(.top, 22)
+        .padding(.bottom, 20)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.resonatePurple.opacity(0.3), lineWidth: 1)
+        )
     }
 }
-.padding(.horizontal, 18)
-.padding(.top, 20)
-.padding(.bottom, 14)
-.background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 16))

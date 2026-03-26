@@ -1,5 +1,5 @@
 //
-//  SongsTabView.swift
+//  ArtistsTabView.swift
 //  Resonate
 //
 //  Created by Russal Arya on 18/9/2025.
@@ -11,49 +11,50 @@ import MusicKit
 struct ArtistsTabView: View {
     let userToken: String
     
-    @State private var artists: MusicItemCollection<Artist> = []
-    @State private var errorMessage: String?
-    
+    @StateObject private var viewModel = ArtistsViewModel()    
     @State private var selectedArtist: Artist?
     
     var body: some View {
         ScrollView {
-//            HStack(spacing: 0) {
-//                Text("A")
-//            }
-            LazyVStack(spacing: 8) {
-                ForEach(artists, id: \.id) { artist in
-                    ArtistRow(artist: artist) {
-                        selectedArtist = artist
+            TopSpacer()
+            
+            InlineSearchBar(searchText: $viewModel.searchText, label: "Search artists")
+                .padding(.vertical, 6)
+                .padding(.horizontal)
+            
+            if viewModel.isLoading {
+                ClassicLoadingView(text: "Loading your artists")
+            } else if viewModel.artists.isEmpty {
+                EmptyStateView()
+            } else if viewModel.groupedArtists.isEmpty && !viewModel.searchText.isEmpty {
+                NoResultsView(searchText: viewModel.searchText)
+            } else {
+                LazyVStack(alignment: .leading, spacing: 16) {
+                    ForEach(viewModel.sortedKeys, id: \.self) { key in
+                        ArtistsSection(key: key, artists: viewModel.groupedArtists[key] ?? []) { artist in
+                            selectedArtist = artist
+                        }
                     }
                 }
+                .padding(.top, 8)
+                .padding(.horizontal)
             }
-            .padding()
+        }
+        .onChange(of: viewModel.searchText) { viewModel.applyFilter() }
+        .task {
+            await viewModel.fetchLibraryArtists()
+        }
+        .alert("Error", isPresented: Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { if !$0 { viewModel.errorMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) { viewModel.errorMessage = nil }
+        } message: {
+            Text(viewModel.errorMessage ?? "")
         }
         .navigationDestination(item: $selectedArtist) { artist in
             ArtistView(artist: artist)
-        }
-        .task {
-            await fetchLibraryArtists()
-        }
-        .alert("Error", isPresented: .constant(errorMessage != nil)) {
-            Button("OK", role: .cancel) { errorMessage = nil }
-        } message: {
-            Text(errorMessage ?? "")
-        }
-    }
-    
-    func fetchLibraryArtists() async {
-        do {
-            let request = MusicLibraryRequest<Artist>()
-            let response = try await request.response()
-            await MainActor.run {
-                artists = response.items
-            }
-        } catch {
-            await MainActor.run {
-                errorMessage = "Failed to fetch songs: \(error.localizedDescription)"
-            }
+            .ignoresSafeArea(edges: .top) // extend under status bar
         }
     }
 }

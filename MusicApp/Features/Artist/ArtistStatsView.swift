@@ -1,43 +1,49 @@
 //
-//  AlbumStatsView.swift
+//  ArtistStatsView.swift
 //  Resonate
 //
-//  Created by Russal Arya on 23/9/2025.
+//  Created by Russal Arya on 7/10/2025.
 //
 
 import SwiftUI
 import MusicKit
 
-struct AlbumStatsView: View {
-    let album: Album
-    var playCount: Int
-    var timePlayed: Double
+func getTotalPlayCountForSongs(_ songs: [Song]) -> Int {
+    return songs.reduce(0) { $0 + ($1.playCount ?? 0) }
+}
+
+func getTotalTimePlayedForSongs(_ songs: [Song]) -> Double {
+    return songs.reduce(0) { total, song in
+        if let duration = song.duration {
+            return total + Double(song.playCount ?? 0) * duration
+        }
+        return total
+    }
+}
+
+struct ArtistStatsView: View {
+    let artist: Artist
+    var librarySongs: [Song]
     
     @State private var errorMessage: String?
-    @State private var tracks: MusicItemCollection<Track> = []
+
+    var playCount: Int { getTotalPlayCountForSongs(librarySongs) }
+    var timePlayed: Double { getTotalTimePlayedForSongs(librarySongs) }
     
     var body: some View {
         VStack(spacing: 10) {
             HStack(spacing: 10) {
-                StatView(title: "Plays", value: playCount.formatted())
+                StatContainerView(title: "Plays", value: playCount.formatted())
                 
                 let totalMinutes = timePlayed / 60
-                StatView(title: "Minutes", value: Int(totalMinutes).formatted())
+                StatContainerView(title: "Minutes", value: Int(totalMinutes).formatted())
             }
             .frame(maxWidth: .infinity)
             
-            StatView(title: "Tracks", value: album.trackCount.formatted())
+            StatContainerView(title: "Songs in library", value: librarySongs.count.formatted())
             
-            if let lastPlayed = album.lastPlayedDate {
-                StatView(title: "Last played", value: lastPlayed.formatted())
-            }
-            
-            if let discoveredDate = album.libraryAddedDate {
-                StatView(title: "Discovered", value: discoveredDate.formatted())
-            }
-            
-            if let releaseDate = album.releaseDate {
-                StatView(title: "Release date", value: releaseDate.formatted())
+            if let discoveredDate = artist.libraryAddedDate {
+                StatContainerView(title: "Discovered", value: discoveredDate.formatted())
             }
         }
         .frame(maxWidth: .infinity)

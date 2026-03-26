@@ -8,18 +8,21 @@
 import SwiftUI
 import MusicKit
 
-struct SongButtons: View {
-    let playSong: () -> Void
+struct MusicItemButtons: View {
+    let musicItem: MusicItem
+    let playMusicItem: () -> Void
     let duration: TimeInterval?
     let albumTitle: String?
-    var artworkColor: Color
-    var primaryColor: Color
-    var betterTextColor: Color
+    let artworkColor: Color
+    let primaryColor: Color
+    let betterTextColor: Color
+    let menuItems: [[MenuItem]]
+    var toggleMenu: () -> Void = {}
     
     var body: some View {
         HStack(spacing: 10) {
             // Play
-            Button(action: { playSong() }) {
+            Button(action: { playMusicItem() }) {
                 HStack {
                     Image(systemName: "play.fill")
                     Text("Play")
@@ -41,45 +44,32 @@ struct SongButtons: View {
             .background(primaryColor)
             .cornerRadius(.infinity)
             
-            // Go to Album
-            if albumTitle != nil {
-                Button(action: {}) {
-                    Image(systemName: "square.stack")
-                }
-                .fontWeight(.bold)
-                .foregroundColor(betterTextColor)
-                .font(Font.system(size: 20))
-                .frame(maxWidth: 48, maxHeight: 48)
-                .glassEffect(.regular.tint(Color.resonateWhite.opacity(0.5)))
-            } else {
-                Button(action: {}) {
-                    Image(systemName: "shuffle")
-                    Text("Shuffle")
-                }
-                .fontWeight(.bold)
-                .font(Font.system(size: 16))
-                .foregroundColor(betterTextColor)
-                .padding(.horizontal, 24)
-                .padding(.vertical, 14)
-                .frame(maxWidth: .infinity)
-                .glassEffect(.regular.tint(Color.resonateWhite.opacity(0.5)))
-            }
-            
-//            // Share
-//            Button(action: {}) {
-//                Image(systemName: "square.and.arrow.up")
+//            // NEED TO IMPLEMENT [VERSION 1.1]
+//            // Go to Album
+//            if albumTitle != nil {
+//                Button(action: {}) {
+//                    Image(systemName: "square.stack")
+//                }
+//                .fontWeight(.bold)
+//                .foregroundColor(betterTextColor)
+//                .font(Font.system(size: 20))
+//                .frame(maxWidth: 48, maxHeight: 48)
+//                .glassEffect(.regular.tint(Color.resonateWhite.opacity(0.5)))
+//            } else {
+//                Button(action: {}) {
+//                    Image(systemName: "shuffle")
+//                    Text("Shuffle")
+//                }
+//                .fontWeight(.bold)
+//                .font(Font.system(size: 16))
+//                .foregroundColor(betterTextColor)
+//                .padding(.horizontal, 24)
+//                .padding(.vertical, 14)
+//                .frame(maxWidth: .infinity)
+//                .glassEffect(.regular.tint(Color.resonateWhite.opacity(0.5)))
 //            }
-//            .fontWeight(.bold)
-//            .font(Font.system(size: 20))
-//            .frame(maxWidth: 48, maxHeight: 48)
-//            .padding(.bottom, 8)
-//            .padding(.top, 6)
-//            .foregroundStyle(Color.resonatePurple)
-//            .background(Color.resonateLightPurple.opacity(0.2))
-//            .cornerRadius(.infinity)
             
-            // Dots
-            Button(action: {}) {
+            Button(action: toggleMenu) {
                 Image(systemName: "ellipsis")
             }
             .fontWeight(.bold)
@@ -87,6 +77,17 @@ struct SongButtons: View {
             .foregroundColor(betterTextColor)
             .frame(maxWidth: 48, maxHeight: 48)
             .glassEffect(.regular.tint(Color.resonateWhite.opacity(0.5)))
+            
+//            Menu {
+//                generateMenu(menuItems)
+//            } label: {
+//                Image(systemName: "ellipsis")
+//                    .fontWeight(.bold)
+//                    .font(Font.system(size: 28))
+//                    .foregroundColor(betterTextColor)
+//                    .frame(maxWidth: 48, maxHeight: 48)
+//                    .glassEffect(.regular.tint(Color.resonateWhite.opacity(0.5)))
+//            }
                 
 //            if song.hasLyrics {
 //                Button(action: {}) {

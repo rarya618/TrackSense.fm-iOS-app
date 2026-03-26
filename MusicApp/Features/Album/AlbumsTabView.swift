@@ -1,8 +1,8 @@
 //
-//  AlbumsTabView.swift
-//  Resonate
+// AlbumsTabView.swift
+// Resonate
 //
-//  Created by Russal Arya on 18/9/2025.
+// Created by Russal Arya on 18/9/2025.
 //
 
 import SwiftUI
@@ -10,50 +10,89 @@ import MusicKit
 
 struct AlbumsTabView: View {
     let userToken: String
-    
-    @State private var albums: MusicItemCollection<Album> = []
-    @State private var errorMessage: String?
-    
+
+    @StateObject private var viewModel = AlbumsViewModel()
     @State private var selectedAlbum: Album?
-    
+
     var body: some View {
         ScrollView {
-            LazyVStack(spacing: 8) {
-                ForEach(albums) { album in
-                    AlbumRow(album: album) {
-                        selectedAlbum = album
+            TopSpacer()
+            InlineSearchBar(searchText: $viewModel.searchText, label: "Search albums")
+                .padding(.vertical, 6)
+                .padding(.horizontal)
+            
+            if viewModel.isLoading {
+                ClassicLoadingView(text: "Loading your albums")
+            } else if viewModel.albums.isEmpty {
+                EmptyStateView()
+            } else if viewModel.groupedAlbums.isEmpty && !viewModel.searchText.isEmpty {
+                NoResultsView(searchText: viewModel.searchText)
+            } else {
+                LazyVStack(alignment: .leading, spacing: 16) {
+                    ForEach(viewModel.sortedKeys, id: \.self) { key in
+                        AlbumSection(key: key, albums: viewModel.groupedAlbums[key] ?? []) { album in
+                            selectedAlbum = album
+                        }
                     }
                 }
+                .padding(.horizontal)
+                .padding(.top, 8)
             }
-            .padding()
+        }
+        .onChange(of: viewModel.searchText) { viewModel.applyFilter() }
+        .task {
+            await viewModel.fetchLibraryAlbums()
+        }
+        .alert("Error", isPresented: Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { if !$0 { viewModel.errorMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) { viewModel.errorMessage = nil }
+        } message: {
+            Text(viewModel.errorMessage ?? "")
         }
         .navigationDestination(item: $selectedAlbum) { album in
             AlbumView(album: album)
         }
-        .task {
-            await fetchLibraryAlbums()
-        }
-        .alert("Error", isPresented: Binding(
-            get: { errorMessage != nil },
-            set: { if !$0 { errorMessage = nil } }
-        )) {
-            Button("OK", role: .cancel) { errorMessage = nil }
-        } message: {
-            Text(errorMessage ?? "")
-        }
     }
-    
-    func fetchLibraryAlbums() async {
-        do {
-            let request = MusicLibraryRequest<Album>()
-            let response = try await request.response()
-            await MainActor.run {
-                albums = response.items
-            }
-        } catch {
-            await MainActor.run {
-                errorMessage = "Failed to fetch albums: \(error.localizedDescription)"
-            }
+}
+
+struct EmptyStateView: View {
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: "music.note.list")
+                .font(.system(size: 60))
+                .foregroundColor(.secondary)
+            Text("No Albums Found")
+                .font(.title2)
+                .fontWeight(.semibold)
+            Text("Your library albums will appear here")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
         }
+        .padding()
+    }
+}
+
+
+struct NoResultsView: View {
+    var searchText: String
+
+    var body: some View {
+        // No search results
+        VStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 60))
+                .foregroundColor(.secondary)
+            Text("No Results for '\(searchText)'")
+                .font(.title2)
+                .fontWeight(.semibold)
+            Text("Check the spelling or try a new search.")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .padding()
     }
 }

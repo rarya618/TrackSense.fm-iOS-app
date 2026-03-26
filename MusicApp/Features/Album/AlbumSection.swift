@@ -1,3 +1,13 @@
+//
+//  AlbumSection.swift
+//  Resonate
+//
+//  Created by Russal Arya on 6/10/2025.
+//
+
+import SwiftUI
+import MusicKit
+
 struct AlbumSection: View {
     let key: String
     let albums: [Album]

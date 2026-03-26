@@ -1,17 +1,17 @@
 //
-//  AlbumSection.swift
+//  ArtistsSection.swift
 //  Resonate
 //
-//  Created by Russal Arya on 6/10/2025.
+//  Created by Russal Arya on 8/10/2025.
 //
 
 import SwiftUI
 import MusicKit
 
-struct AlbumSection: View {
+struct ArtistsSection: View {
     let key: String
-    let albums: [Album]
-    let onSelect: (Album) -> Void
+    let artists: [Artist]
+    let onSelect: (Artist) -> Void
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -21,18 +21,9 @@ struct AlbumSection: View {
                 .fontWeight(.bold)
                 .padding(.leading, 4)
             
-            // Two-column grid
-            LazyVGrid(
-                columns: [
-                    GridItem(.flexible(), spacing: 8),
-                    GridItem(.flexible(), spacing: 8)
-                ],
-                spacing: 8
-            ) {
-                ForEach(albums) { album in
-                    AlbumRow(album: album, size: 160) {
-                        onSelect(album)
-                    }
+            ForEach(artists) { artist in
+                ArtistRow(artist: artist) {
+                    onSelect(artist)
                 }
             }
         }

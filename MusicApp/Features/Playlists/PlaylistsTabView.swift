@@ -1,5 +1,5 @@
 //
-//  SongsTabView.swift
+//  PlaylistsTabView.swift
 //  Resonate
 //
 //  Created by Russal Arya on 18/9/2025.
@@ -11,25 +11,22 @@ import MusicKit
 struct PlaylistsTabView: View {
     let userToken: String
     
-    @State private var albums: MusicItemCollection<Playlist> = []
     @State private var errorMessage: String?
-    
-    @State private var currentSection = 0
+    @State private var selectedPlaylist: Playlist?
     
     var body: some View {
         ScrollView {
-//            HStack(spacing: 0) {
-//                Text("A")
-//            }
-            LazyVStack(spacing: 8) {
-                ForEach(albums, id: \.id) { playlist in
-                    PlaylistRow(playlist: playlist)
-                }
-            }
-            .padding()
+            TopSpacer()
+            
+            PlaylistsList(
+                selectPlaylist: selectPlaylist,
+                color: .resonatePurple,
+                onlyShowPersonalPlaylists: false
+            )
+            .padding(.horizontal)
         }
-        .task {
-            await fetchLibraryAlbums()
+        .navigationDestination(item: $selectedPlaylist) { playlist in
+            PlaylistView(playlist: playlist)
         }
         .alert("Error", isPresented: .constant(errorMessage != nil)) {
             Button("OK", role: .cancel) { errorMessage = nil }
@@ -37,60 +34,97 @@ struct PlaylistsTabView: View {
             Text(errorMessage ?? "")
         }
     }
+
+    func setError(error: String) {
+        errorMessage = error
+    }
+
+    func selectPlaylist(playlist: Playlist) {
+        selectedPlaylist = playlist
+    }
+}
+
+struct PlaylistsList: View {
+    var selectPlaylist: (Playlist) -> Void
+    let color: Color
+    let onlyShowPersonalPlaylists: Bool
     
-    func fetchLibraryAlbums() async {
+    @EnvironmentObject var overlayManager: OverlayManager
+
+    @State private var playlists: MusicItemCollection<Playlist> = []
+    
+    var body: some View {
+        LazyVStack(spacing: 8) {
+            if onlyShowPersonalPlaylists {
+                ForEach(playlists, id: \.id) { playlist in
+                    if playlist.kind == .userShared {
+                        MusicItemBlock(
+                            artwork: playlist.artwork,
+                            title: playlist.name,
+                            artistName: playlist.curatorName,
+                            playCount: nil,
+                            removeSpacer: false,
+                            removeEllipsis: true,
+                            primaryColor: color,
+                            secondaryColor: color.opacity(0.9)
+                        ) {
+                            selectPlaylist(playlist)
+                        }
+                    }
+                }
+            } else {
+                ForEach(playlists, id: \.id) { playlist in
+                    MusicItemBlock(
+                        artwork: playlist.artwork,
+                        title: playlist.name,
+                        artistName: playlist.curatorName,
+                        playCount: nil,
+                        removeSpacer: false,
+                        removeEllipsis: false,
+                        primaryColor: color
+                    ) {
+                        selectPlaylist(playlist)
+                    }
+                }
+            }
+        }
+        .task {
+            await fetchLibraryPlaylists()
+        }
+    }
+
+    func fetchLibraryPlaylists() async {
         do {
+            // Fetch user's library playlists
             let request = MusicLibraryRequest<Playlist>()
             let response = try await request.response()
+
+            // Sort by lastModifiedDate descending (newest first). Missing dates go to the end.
+            let sorted = response.items.sorted { lhs, rhs in
+                let l = lhs.lastModifiedDate
+                let r = rhs.lastModifiedDate
+                switch (l, r) {
+                case let (.some(ld), .some(rd)):
+                    return ld > rd
+                case (nil, .some):
+                    // place nil after any real date
+                    return false
+                case (.some, nil):
+                    // place real date before nil
+                    return true
+                case (nil, nil):
+                    return false
+                }
+            }
+
             await MainActor.run {
-                albums = response.items
+                // Wrap back into MusicItemCollection
+                playlists = MusicItemCollection(sorted)
             }
         } catch {
             await MainActor.run {
-                errorMessage = "Failed to fetch songs: \(error.localizedDescription)"
+                overlayManager.showError("Failed to fetch playlists: \(error.localizedDescription)")
             }
-        }
-    }
-}
-
-struct PlaylistRow: View {
-    let playlist: Playlist
-//    let onTap: () -> Void
-
-    var body: some View {
-//        Button(action: onTap) {
-            HStack(spacing: 12) {
-                PlaylistArtworkView(playlist: playlist)
-                VStack(alignment: .leading) {
-                    Text(playlist.name)
-                        .font(.headline)
-                        .foregroundColor(.resonatePurple)
-//                    Text(playlist.curatorName)
-//                        .font(.subheadline)
-//                        .foregroundColor(.resonateLightPurple)
-                }
-
-                Spacer()
-            }
-//        }
-        .buttonStyle(.plain) // removes SwiftUI’s default button tint
-    }
-}
-
-struct PlaylistArtworkView: View {
-    let playlist: Playlist
-
-    var body: some View {
-        
-        if let artwork = playlist.artwork {
-            ArtworkImage(artwork, width: 50, height: 50)
-                .cornerRadius(8)
-        } else {
-            Image(systemName: "music.note")
-                .frame(width: 50, height: 50)
-                .foregroundColor(.resonatePurple)
-                .background(Color.resonateLightPurple)
-                .clipShape(RoundedRectangle(cornerRadius: 6))
         }
     }
 }

@@ -1,6 +1,6 @@
 //
 //  AlbumRow.swift
-//  MusicApp
+//  Resonate
 //
 //  Created by Russal Arya on 21/9/2025.
 //
@@ -10,24 +10,44 @@ import MusicKit
 
 struct AlbumRow: View {
     let album: Album
+    let size: CGFloat
     let onTap: () -> Void
+    
+    @State private var errorMessage: String?
+    @State private var tracks: MusicItemCollection<Track>
+    
+    init(album: Album, size: CGFloat, onTap: @escaping () -> Void) {
+        self.album = album
+        self.size = size
+        self.onTap = onTap
+        _errorMessage = State(initialValue: nil)
+        _tracks = State(initialValue: album.tracks ?? MusicItemCollection([]))
+    }
+
+    var playCount: Int { getTotalPlayCount(tracks) }
+    var timePlayed: Double { getTotalTimePlayed(tracks) }
 
     var body: some View {
-        Button(action: onTap) {
-            HStack(spacing: 12) {
-                AlbumArtworkView(album: album, width: 50, height: 50, cornerRadius: 8)
-                VStack(alignment: .leading) {
-                    Text(album.title)
-                        .font(.headline)
-                        .foregroundColor(.customPurple)
-                    Text(album.artistName)
-                        .font(.subheadline)
-                        .foregroundColor(.customLightPurple)
+        LargeMusicItemBlock(
+            artwork: album.artwork,
+            title: album.title,
+            artistName: album.artistName,
+            playCount: playCount,
+            size: size
+        ) {
+            onTap()
+        }
+        .task {
+            if album.tracks == nil {
+                do {
+                    let fullAlbum = try await album.with([.tracks])
+                    tracks = fullAlbum.tracks ?? MusicItemCollection([])
+
+                } catch {
+                    errorMessage = "Failed to load tracks"
                 }
-                
-                Spacer()
             }
         }
-        .buttonStyle(.plain) // removes SwiftUI’s default button tint
     }
 }
+

@@ -8,7 +8,7 @@
 import SwiftUI
 import MusicKit
 
-struct SongStatsView: View {
+struct SongStatsCard: View {
     let song: Song
     
     @State private var errorMessage: String?
@@ -45,8 +45,4 @@ struct SongStatsView: View {
         }
         .frame(maxWidth: .infinity)
     }
-}
-
-func getMinutesPlayed (playCount: Int, duration: Double) -> Double {
-    return (Double(playCount) * duration) / 60
 }

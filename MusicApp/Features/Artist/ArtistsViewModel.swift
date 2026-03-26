@@ -1,8 +1,8 @@
 //
-//  AlbumsViewModel.swift
-//  MusicApp
+//  ArtistsViewModel.swift
+//  Resonate
 //
-//  Created by Russal Arya on 6/10/2025.
+//  Created by Russal Arya on 8/10/2025.
 //
 
 import SwiftUI
@@ -10,16 +10,16 @@ import MusicKit
 internal import Combine
 
 @MainActor
-final class AlbumsViewModel: ObservableObject {
-    @Published var albums: MusicItemCollection<Album> = []
+final class ArtistsViewModel: ObservableObject {
+    @Published var artists: MusicItemCollection<Artist> = []
     @Published var errorMessage: String?
     @Published var isLoading = false
     @Published var searchText = ""
 
-    @Published private(set) var groupedAlbums: [String: [Album]] = [:]
+    @Published private(set) var groupedArtists: [String: [Artist]] = [:]
     @Published private(set) var sortedKeys: [String] = []
 
-    func fetchLibraryAlbums() async {
+    func fetchLibraryArtists() async {
         isLoading = true
         do {
             let status = await MusicAuthorization.request()
@@ -28,31 +28,30 @@ final class AlbumsViewModel: ObservableObject {
                 isLoading = false
                 return
             }
-            let request = MusicLibraryRequest<Album>()
+            let request = MusicLibraryRequest<Artist>()
             let response = try await request.response()
-            albums = response.items
+            artists = response.items
             applyFilter()
         } catch {
-            errorMessage = "Failed to fetch albums: \(error.localizedDescription)"
+            errorMessage = "Failed to fetch artists: \(error.localizedDescription)"
         }
         isLoading = false
     }
 
     func applyFilter() {
         let filtered = searchText.isEmpty
-            ? Array(albums)
-            : albums.filter {
-                $0.title.localizedCaseInsensitiveContains(searchText) ||
-                $0.artistName.localizedCaseInsensitiveContains(searchText)
+            ? Array(artists)
+            : artists.filter {
+                $0.name.localizedCaseInsensitiveContains(searchText)
               }
 
-        let grouped = Dictionary(grouping: filtered) { album in
-            guard let firstChar = album.title.first else { return "#" }
+        let grouped = Dictionary(grouping: filtered) { artist in
+            guard let firstChar = artist.name.first else { return "#" }
             let char = String(firstChar).uppercased()
             return char.rangeOfCharacter(from: .letters) != nil ? char : "#"
         }
 
-        groupedAlbums = grouped
+        groupedArtists = grouped
         sortedKeys = grouped.keys.sorted {
             if $0 == "#" { return false }
             if $1 == "#" { return true }

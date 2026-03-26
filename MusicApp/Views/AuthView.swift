@@ -8,6 +8,17 @@
 import SwiftUI
 import MusicKit
 
+struct TextItem: View {
+    let text: String
+    
+    var body: some View {
+        Text(text)
+            .multilineTextAlignment(.leading)
+            .foregroundColor(.secondary)
+            .padding(.horizontal)
+    }
+}
+
 struct AuthView: View {
     var onAuthorized: (String) -> Void
     
@@ -18,51 +29,16 @@ struct AuthView: View {
     
     var body: some View {
         VStack(spacing: 24) {
-            Image(systemName: "music.note.list")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 100, height: 100)
-                .foregroundColor(.resonatePurple)
-
-            Text("Connect to Apple Music")
-                .font(.title)
-                .fontWeight(.bold)
-                .foregroundColor(.resonatePurple)
-
-            Text("You can then search for songs, play your favourites, personalise your experience, and explore detailed stats for all your listening activity.")
-                .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
-                .padding(.horizontal)
-
-            Text("You'll be asked to allow access. This is safe and won't collect any personal information.")
-                .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
-                .padding(.horizontal)
+            NoteFromMeView()
             
-            if isLoading {
-                ProgressView("Authorizing…")
-            } else if status == .authorized, let userToken {
-                Text("✅ Connected")
-                    .foregroundColor(.green)
-                    .fontWeight(.semibold)
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now()) {
-                            onAuthorized(userToken) // 🔑 notify app
-                        }
+            StandardButton(
+                label: "Get started",
+                action: {
+                    Task {
+                        await authorizeAndFetchToken()
                     }
-            }
-            
-            Spacer()
-            
-            Button("Continue") {
-                Task { await authorizeAndFetchToken() }
-            }
-            .font(.headline)
-            .padding()
-            .frame(maxWidth: .infinity)
-            .background(Color.customPurple)
-            .foregroundColor(.buttonLabel)
-            .cornerRadius(12)
+                }
+            )
         }
         .padding()
     }

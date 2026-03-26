@@ -8,33 +8,37 @@
 import SwiftUI
 import Charts
 
-struct LibraryTrendsCard: View {
+struct TrendsCard: View {
     let history: [String: [String: Int]]?
-
+    let unitLabel: String  // "h" or "plays"
+    
     private var stats: TrendStats? {
         calculateTrends()
     }
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-
             Text("Trends")
-                .font(.title3.weight(.bold))
-
+                .font(.system(size: 24, weight: .bold))
+            
             if let s = stats {
-
+                
                 // MARK: - Daily Growth Section
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Daily Growth")
-                        .font(.caption)
+                        .font(.system(size: 16, weight: .bold))
                         .foregroundStyle(.secondary)
-
+                    
                     HStack(spacing: 14) {
-                        TrendMetric(title: "Yesterday",   value: "+\(s.yesterdayGrowth) h")
-                        TrendMetric(title: "7-day Avg",    value: String(format: "%.1f h/day", s.sevenDayAvg))
-                        TrendMetric(title: "Peak Day",     value: "+\(s.peakGrowth) h")
+                        TrendMetric(title: "Yesterday",
+                                    value: "+\(s.yesterdayGrowth) \(unitLabel)")
+                        TrendMetric(title: "7-day Avg",
+                                    value: String(format: "%.1f \(unitLabel)/day",
+                                                  s.sevenDayAvg))
+                        TrendMetric(title: "Peak Day",
+                                    value: "+\(s.peakGrowth) \(unitLabel)")
                     }
-
+                    
                     // Sparkline
                     Chart(s.sparklineData) { item in
                         LineMark(
@@ -48,44 +52,44 @@ struct LibraryTrendsCard: View {
                     .frame(height: 40)
                     .padding(.top, 6)
                 }
-
+                
                 Divider()
-
+                
                 // MARK: - Weekly Momentum
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Weekly Momentum")
-                        .font(.caption)
+                        .font(.system(size: 16, weight: .bold))
                         .foregroundStyle(.secondary)
-
+                    
                     HStack(spacing: 12) {
                         Text(s.weekTrendIcon)
                             .foregroundStyle(s.weekTrendColor)
                             .font(.title3.weight(.bold))
-
+                        
                         VStack(alignment: .leading) {
-                            Text("This Week: +\(s.week1) h")
+                            Text("This Week: +\(s.week1) \(unitLabel)")
                                 .font(.headline)
-                            Text("Last Week: +\(s.week2) h")
+                            Text("Last Week: +\(s.week2) \(unitLabel)")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                         }
-
+                        
                         Spacer()
-
+                        
                         Text("\(s.weekPctChange)%")
                             .font(.headline)
                             .foregroundStyle(s.weekTrendColor)
                     }
                 }
-
+                
                 Divider()
-
+                
                 // MARK: - Consistency Score
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Consistency")
-                        .font(.caption)
+                        .font(.system(size: 16, weight: .bold))
                         .foregroundStyle(.secondary)
-
+                    
                     HStack {
                         Text("\(s.consistency)%")
                             .font(.title3.bold())
@@ -94,29 +98,34 @@ struct LibraryTrendsCard: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-
+                
                 Divider()
-
+                
                 // MARK: - Streaks
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Listening Streak")
-                        .font(.caption)
+                        .font(.system(size: 16, weight: .bold))
                         .foregroundStyle(.secondary)
-
+                    
                     HStack(spacing: 18) {
                         TrendMetric(title: "Current", value: "\(s.currentStreak) days")
                         TrendMetric(title: "Longest", value: "\(s.longestStreak) days")
                     }
                 }
-
+                
             } else {
                 Text("Not enough data to compute trends.")
                     .foregroundStyle(.secondary)
             }
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(18)
+        .padding(.horizontal, 20)
+        .padding(.top, 22)
+        .padding(.bottom, 20)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.resonatePurple.opacity(0.3), lineWidth: 1)
+        )
     }
 }
 
@@ -137,7 +146,7 @@ struct TrendMetric: View {
 }
 
 // MARK: - Trend Stats & Calculation
-extension LibraryTrendsCard {
+extension TrendsCard {
 
     struct TrendStats {
         let daily: [Int]                   // daily growth values
@@ -170,14 +179,37 @@ extension LibraryTrendsCard {
     func calculateTrends() -> TrendStats? {
         guard let history else { return nil }
 
-        // Convert dictionary → sorted array of (Date, totalHours)
-        let totals: [(date: Date, total: Int)] = history.compactMap { key, val in
-            guard let total = val["value"],
+        // Convert dictionary → sorted array of (Date, totalHours), filling missing days
+        let rawTotals: [(date: Date, total: Int)] = history.compactMap { key, val in
+            guard let total = val["value"] ?? val["plays"] ?? val["totalPlays"],
                   let date = KeyDateFormatter.date(from: key)
             else { return nil }
             return (date, total)
         }
         .sorted(by: { $0.date < $1.date })
+
+        guard let firstDate = rawTotals.first?.date,
+              let lastDate = rawTotals.last?.date
+        else { return nil }
+
+        let calendar = Calendar.current
+        var totals: [(date: Date, total: Int)] = []
+        var cursor = firstDate
+        var lastKnownTotal = rawTotals.first!.total
+        var index = 0
+
+        while cursor <= lastDate {
+            if index < rawTotals.count && calendar.isDate(rawTotals[index].date, inSameDayAs: cursor) {
+                lastKnownTotal = rawTotals[index].total
+                totals.append((cursor, lastKnownTotal))
+                index += 1
+            } else {
+                // fill missing day using last known cumulative value
+                totals.append((cursor, lastKnownTotal))
+            }
+
+            cursor = calendar.date(byAdding: .day, value: 1, to: cursor)!
+        }
 
         guard totals.count >= 3 else { return nil }
 
@@ -201,11 +233,19 @@ extension LibraryTrendsCard {
         let weekColor: Color = pct >= 0 ? .green : .red
         let weekIcon = pct >= 0 ? "▲" : "▼"
 
-        // Consistency (based on variance)
-        let mean = avg7
-        let variance = last7.map { pow(Double($0) - mean, 2) }.reduce(0, +) / Double(max(last7.count - 1, 1))
-        let stdDev = sqrt(variance)
-        let consistencyScore = max(0, min(100, Int(100 - stdDev * 5)))
+        // Consistency (MAD-based — robust median absolute deviation method)
+        let weekValues = last7.map { Double($0) }
+        let sortedWeek = weekValues.sorted()
+        let median = sortedWeek[sortedWeek.count / 2]
+
+        let deviations = weekValues.map { abs($0 - median) }.sorted()
+        let mad = deviations[deviations.count / 2]
+
+        // Relative deviation (normalized variability)
+        let relative = mad / max(median, 1)
+
+        // Convert to 0–100 score: lower variability → higher score
+        let consistencyScore = max(0, min(100, Int((1 / (1 + relative)) * 100)))
 
         let consistencyDesc: String = {
             switch consistencyScore {
