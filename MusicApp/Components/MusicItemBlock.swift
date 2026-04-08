@@ -36,14 +36,14 @@ struct MusicItemBlock: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(title)
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.montserrat(size: 17, weight: .semibold))
                             .foregroundColor(primaryColor)
                             .lineLimit(1)
                         
                         HStack(spacing: 6) {
                             if let artist = artistName {
                                 Text(artist)
-                                    .font(.system(size: 14))
+                                    .font(.montserrat(size: 14))
                                     .foregroundColor(secondaryColor)
                                     .lineLimit(1)
                             }
@@ -53,7 +53,7 @@ struct MusicItemBlock: View {
                                     .fill(Color.customLightPurple.opacity(0.4))
                                     .frame(width: 3, height: 3)
                                 Text(plays.formatted() + " play" + (plays == 1 ? "" : "s"))
-                                    .font(.system(size: 14))
+                                    .font(.montserrat(size: 14))
                                     .foregroundColor(secondaryColor)
                                     .lineLimit(1)
                             }
@@ -72,7 +72,7 @@ struct MusicItemBlock: View {
                         } label: {
                             Image(systemName: "ellipsis")
                                 .fontWeight(.bold)
-                                .font(Font.system(size: 24))
+                                .font(Font.montserrat(size: 24))
                                 .foregroundColor(primaryColor)
                                 .frame(width: 44, height: 44)
                                 .contentShape(Circle())
@@ -83,7 +83,7 @@ struct MusicItemBlock: View {
                         } label: {
                             Image(systemName: "ellipsis")
                                 .fontWeight(.bold)
-                                .font(Font.system(size: 24))
+                                .font(.montserrat(size: 24))
                                 .foregroundColor(primaryColor)
                                 .frame(width: 44, height: 44)
                                 .contentShape(Circle())

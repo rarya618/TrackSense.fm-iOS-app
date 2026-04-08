@@ -113,7 +113,7 @@ struct BottomBar: View {
             )
         }
         .frame(maxWidth: .infinity)
-        .font(.system(size: 20))
+        .font(.montserrat(size: 20))
         .foregroundStyle(artworkColor)
         .padding(.horizontal, 12)
         .padding(.vertical, 8)

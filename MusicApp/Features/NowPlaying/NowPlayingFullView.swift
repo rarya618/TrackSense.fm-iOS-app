@@ -120,6 +120,8 @@ struct NowPlayingFullView: View {
     @EnvironmentObject var overlayManager: OverlayManager
     @EnvironmentObject var authManager: AuthManager
     
+    @State private var lastErrorMessage: String? = nil
+    
     @State private var currentSong: Song?
     @State private var cloudSongData: SongFromCloud?
     
@@ -235,7 +237,7 @@ struct NowPlayingFullView: View {
                     HStack {
                         Button(action: closePlayer) {
                             Image(systemName: "xmark")
-                                .font(Font.system(size: 20, weight: .bold))
+                                .font(Font.montserrat(size: 20, weight: .bold))
                                 .foregroundColor(primaryColor)
                                 .frame(width: 36, height: 36)
 //                                .background(primaryColor.opacity(0.16))
@@ -245,14 +247,14 @@ struct NowPlayingFullView: View {
                         Spacer()
                         
                         Text("Now playing")
-                            .font(Font.system(size: 16, weight: .bold))
+                            .font(Font.montserrat(size: 16, weight: .bold))
                             .foregroundColor(primaryColor)
                         
                         Spacer()
                         
                         Button(action: toggleMenuSheet) {
                             Image(systemName: "ellipsis")
-                                .font(Font.system(size: 20, weight: .bold))
+                                .font(Font.montserrat(size: 20, weight: .bold))
                                 .foregroundColor(primaryColor)
                                 .frame(width: 36, height: 36)
 //                                .background(primaryColor.opacity(0.12))
@@ -577,9 +579,15 @@ struct NowPlayingFullView: View {
     }
 
     func showError(_ message: String) async {
+        // Only show if it's a different error from last time
+        guard message != lastErrorMessage else { return }
+        lastErrorMessage = message
         await displayMessage(message) { msg in
             overlayManager.showError(msg)
         }
+        // Clear after a delay so same error can show again later if needed
+        try? await Task.sleep(nanoseconds: 5_000_000_000) // 5 seconds
+        lastErrorMessage = nil
     }
 }
 

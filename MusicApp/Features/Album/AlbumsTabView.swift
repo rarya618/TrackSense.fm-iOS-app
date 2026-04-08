@@ -61,7 +61,7 @@ struct EmptyStateView: View {
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: "music.note.list")
-                .font(.system(size: 60))
+                .font(.montserrat(size: 60))
                 .foregroundColor(.secondary)
             Text("No Albums Found")
                 .font(.title2)
@@ -83,13 +83,13 @@ struct NoResultsView: View {
         // No search results
         VStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 60))
+                .font(.montserrat(size: 60))
                 .foregroundColor(.secondary)
             Text("No Results for '\(searchText)'")
-                .font(.title2)
+                .font(.montserrat(size: 36))
                 .fontWeight(.semibold)
             Text("Check the spelling or try a new search.")
-                .font(.subheadline)
+                .font(.montserrat(size: 20))
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
         }

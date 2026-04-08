@@ -16,16 +16,16 @@ struct StatContainerView: View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text(value)
-                    .font(.system(size: 22, weight: .bold, design: .rounded))
+                    .font(.montserrat(size: 22, weight: .bold))
                     .foregroundStyle(.primary)
                 Text(title.uppercased())
-                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .font(.montserrat(size: 12, weight: .semibold))
                     .foregroundStyle(.primary.opacity(0.8))
             }
             Spacer()
         }
-        .padding(.horizontal, 18)
-        .padding(.vertical, 14)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
                 .stroke(Color.gray.opacity(0.2))

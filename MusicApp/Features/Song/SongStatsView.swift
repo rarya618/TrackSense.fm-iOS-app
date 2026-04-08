@@ -49,7 +49,7 @@ struct SongStatsView: View {
         // Stats Card
         VStack(alignment: .leading, spacing: 12) {
             Text("Stats")
-                .font(.system(size: 24, weight: .bold))
+                .font(.montserrat(size: 22, weight: .bold))
             SongStatsCard(song: song)
         }
         .padding(.top, 22)

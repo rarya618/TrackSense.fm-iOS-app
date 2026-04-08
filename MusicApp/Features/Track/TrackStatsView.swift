@@ -17,7 +17,7 @@ struct TrackStatsView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Stats")
                 .fontWeight(.bold)
-                .font(.system(size: 24))
+                .font(.montserrat(size: 24))
             VStack(spacing: 10) {
                 HStack(spacing: 10) {
                     if let playCount = track.playCount {

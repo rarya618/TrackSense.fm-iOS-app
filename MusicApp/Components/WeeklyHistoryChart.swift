@@ -1,6 +1,6 @@
 //
 //  WeeklyHistoryChart.swift
-//  MusicApp
+//  TrackSense
 //
 //  Created by Russal Arya on 27/2/2026.
 //
@@ -76,8 +76,8 @@ struct WeeklyHistoryChart: View {
         VStack(alignment: .leading, spacing: 10) {
             if let start = week.first?.date, let end = week.last?.date {
                 Text("\(start.formatted(.dateTime.month().day())) - \(end.formatted(.dateTime.month().day()))")
-                    .font(.headline)
-                    .padding(.leading, 10)
+                    .font(.montserrat(size: 16, weight: .semibold))
+                    .padding(.leading, 6)
             }
             
             Chart {
@@ -96,7 +96,7 @@ struct WeeklyHistoryChart: View {
                         )
                         .annotation(position: .top) {
                             Text("\(val)")
-                                .font(.caption2)
+                                .font(.montserrat(size: 10, weight: .semibold))
                                 .foregroundColor(.secondary)
                         }
                     }

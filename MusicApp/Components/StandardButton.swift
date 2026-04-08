@@ -18,7 +18,7 @@ struct StandardButton: View {
             action()
         }
         .foregroundColor(color)
-        .font(.system(size: 16, weight: .bold))
+        .font(.montserrat(size: 16, weight: .bold))
         .padding()
         .frame(maxWidth: .infinity)
         .background(bgColor)

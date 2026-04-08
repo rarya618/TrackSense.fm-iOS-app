@@ -172,7 +172,7 @@ struct StatsView: View {
                             PageHeader(text: "Stats")
                             
                             Text("Last synced: \(lastStatsSync?.formatted(date: .abbreviated, time: .shortened) ?? "never")")
-                                .font(.system(size: 14, weight: .medium))
+                                .font(.montserrat(size: 14, weight: .medium))
                                 .foregroundStyle(Color.customLightPurple)
                         }
                         Spacer()
@@ -184,16 +184,16 @@ struct StatsView: View {
                                     ProgressView()
                                     Text("\(Int(syncProgress * 100))%")
                                         .monospacedDigit()
-                                        .font(.system(size: 16, weight: .semibold))
+                                        .font(.montserrat(size: 16, weight: .semibold))
                                     
 //                                    Text(syncStepDescription)
-//                                        .font(.system(size: 14, weight: .medium))
+//                                        .font(.montserrat(size: 14, weight: .medium))
 //                                        .foregroundColor(.secondary)
                                 } else {
                                     Image(systemName: "arrow.clockwise.icloud")
-                                        .font(.system(size: 20))
+                                        .font(.montserrat(size: 20))
                                     Text("Sync")
-                                        .font(.system(size: 16, weight: .bold))
+                                        .font(.montserrat(size: 16, weight: .bold))
                                 }
                             }
                             .padding(.horizontal, 16)
@@ -250,9 +250,9 @@ struct StatsView: View {
                                     )
                                 )
                             } label: {
-                                Image(systemName: "arrow.up.arrow.down")
+                                Image(systemName: "eye")
                                     .fontWeight(.bold)
-                                    .font(Font.system(size: 16))
+                                    .font(.montserrat(size: 16))
                                     .foregroundColor(.resonatePurple)
                                     .padding(.horizontal, 10)
                                     .padding(.vertical, 12)

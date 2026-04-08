@@ -23,8 +23,7 @@ struct MilestonesChartView: View {
                 .foregroundStyle(by: .value("Range", item.label))
                 .annotation(position: .overlay) {
                     Text("\(item.count)")
-                        .font(.caption2)
-                        .fontWeight(.semibold)
+                        .font(.montserrat(size: 10, weight: .semibold))
                         .foregroundColor(.white)
                         .shadow(radius: 1)
                 }

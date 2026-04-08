@@ -29,7 +29,7 @@ struct StatRow: View {
                     .clipShape(Capsule())
                     
                     Text("\(index)")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.montserrat(size: 16, weight: .bold))
                         .foregroundColor(.resonateWhite)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 6)
@@ -40,24 +40,24 @@ struct StatRow: View {
                 // Title & play count
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.montserrat(size: 16, weight: .bold))
                         .foregroundColor(.customPurple)
                         .lineLimit(1)
                     
                         HStack() {
                             if let subtitle = subtitle {
                                 Text(subtitle)
-                                    .font(.system(size: 15, weight: .medium))
+                                    .font(.montserrat(size: 15, weight: .medium))
                                     .foregroundColor(.customPurple)
                                     .lineLimit(1)
                                 
                                 Text("-")
-                                    .font(.system(size: 15, weight: .medium))
+                                    .font(.montserrat(size: 15, weight: .medium))
                                     .lineLimit(1)
                             }
                             
                             Text(isShowingPlays ? "\(playCount.formatted()) plays" : "\((minutesPlayed).formatted()) minutes")
-                                .font(.system(size: 15, weight: .medium))
+                                .font(.montserrat(size: 15, weight: .medium))
                                 .foregroundColor(.customLightPurple)
                                 .lineLimit(1)
                         }
@@ -67,16 +67,17 @@ struct StatRow: View {
                 
                 // Chevron
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.montserrat(size: 14, weight: .semibold))
                     .foregroundColor(.secondary)
                     .opacity(0.7)
             }
             .padding(.vertical, 14)
             .padding(.horizontal, 16)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.resonatePurple.opacity(0.3), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.resonatePurple.opacity(0.08))
+                    .stroke(Color.resonatePurple.opacity(0.25), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

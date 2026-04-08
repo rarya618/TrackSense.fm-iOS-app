@@ -15,7 +15,7 @@ struct Pill: View {
 
     var body: some View {
         Text(text)
-            .font(.system(size: 10))
+            .font(.montserrat(size: 10))
             .fontWeight(.bold)
             .lineLimit(1)
             .foregroundStyle(backgroundColor)
@@ -109,16 +109,16 @@ struct DetailsView: View {
                         // Title + artist grouped
                         VStack(alignment: .leading, spacing: 4) {
                             Text(title)
-                                .font(.system(size: 20, weight: .bold))
+                                .font(.montserrat(size: 20, weight: .bold))
                                 .fixedSize(horizontal: false, vertical: true)
                             
                             Text(artistName)
-                                .font(.system(size: 16, weight: .medium))
+                                .font(.montserrat(size: 16, weight: .medium))
                         }
                     
                         if let album = albumTitle {
                             Text(album)
-                                .font(.system(size: 14))
+                                .font(.montserrat(size: 14))
                                 .fixedSize(horizontal: false, vertical: true)
                         }
                         

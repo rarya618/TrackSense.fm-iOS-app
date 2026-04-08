@@ -16,7 +16,7 @@ struct LoadingView: View {
                 Image("AppIconImage")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 160, height: 160)
+                    .frame(width: 120, height: 120)
             }
         }
     }

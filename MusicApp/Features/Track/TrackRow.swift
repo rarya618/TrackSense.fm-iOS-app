@@ -57,7 +57,7 @@ struct TrackRow: View {
                         
                         if let trackNumber = track.trackNumber {
                             Text("\(trackNumber.description)")
-                                .font(.system(size: 16, weight: .bold))
+                                .font(.montserrat(size: 16, weight: .bold))
                                 .foregroundColor(.resonateWhite)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 6)
@@ -69,7 +69,7 @@ struct TrackRow: View {
                     HStack {
                         VStack(spacing: 2) {
                             Text(track.title)
-                                .font(.system(size: 16))
+                                .font(.montserrat(size: 16))
                                 .fontWeight(.bold)
                                 .foregroundColor(adjustedArtworkColor)
                                 .multilineTextAlignment(.leading)
@@ -78,7 +78,7 @@ struct TrackRow: View {
                             
                             HStack (spacing: 6) {
                                 Text(track.artistName)
-                                    .font(.system(size: 14))
+                                    .font(.montserrat(size: 14))
                                     .foregroundColor(adjustedArtworkColor.opacity(0.8))
                                     .multilineTextAlignment(.leading)
                                     .lineLimit(1)
@@ -89,7 +89,7 @@ struct TrackRow: View {
                                         .frame(width: 3, height: 3)
                                     
                                     Text(playCount.formatted() + " plays")
-                                        .font(.system(size: 14))
+                                        .font(.montserrat(size: 14))
                                         .foregroundColor(adjustedArtworkColor.opacity(0.8))
                                 }
                                 
@@ -103,7 +103,7 @@ struct TrackRow: View {
                             Image(systemName: "ellipsis")
                         }
                         .fontWeight(.bold)
-                        .font(Font.system(size: 24))
+                        .font(.montserrat(size: 24))
                         .foregroundColor(adjustedArtworkColor)
                     }
                 }

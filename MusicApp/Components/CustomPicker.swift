@@ -21,7 +21,7 @@ struct CustomPicker: View {
                     let label = options[index]
                     
                     Text(label)
-                        .font(.system(size: 16, weight: currentSection == index ? .bold : .regular))
+                        .font(.montserrat(size: 16, weight: currentSection == index ? .bold : .regular))
                         .padding(.vertical, 8)
                         .padding(.horizontal, 16)
                         .lineLimit(1)

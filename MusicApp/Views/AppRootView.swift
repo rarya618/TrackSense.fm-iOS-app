@@ -26,7 +26,7 @@ struct OverlayView: View {
             Image(systemName: icon)
                 .foregroundStyle(color)
             Text(message)
-                .font(.system(size: 16, weight: .semibold))
+                .font(.montserrat(size: 16, weight: .semibold))
                 .foregroundStyle(color)
         }
         .padding(.horizontal, 16)
@@ -402,13 +402,13 @@ struct BottomNavButton: View {
         Button(action: {setCurrentPageId(id)}) {
             VStack(spacing: 2) {
                 Image(systemName: icon)
-                    .font(.system(size: fontSize))
+                    .font(.montserrat(size: fontSize))
                     .fontWeight(.bold)
                     .frame(width: size, height: size) // Centers icon perfectly
                 
                 if (!hideLabel) {
                     Text(label)
-                        .font(.system(size: 10, weight: .bold))
+                        .font(.montserrat(size: 10, weight: .bold))
                 }
             }
             .padding(.horizontal, horizontalPadding + (hideLabel ? 2 : 0))

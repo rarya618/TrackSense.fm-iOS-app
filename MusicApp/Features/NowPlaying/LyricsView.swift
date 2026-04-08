@@ -19,10 +19,10 @@ struct LyricsView: View {
                 VStack(spacing: 32) {
                     HStack(alignment: .top, spacing: 12) {
                         Image(systemName: "exclamationmark.triangle.fill")
-                            .font(.system(size: 18))
+                            .font(.montserrat(size: 18))
                         
                         Text("Lyrics are not available in Resonate at this time")
-                            .font(.system(size: 18))
+                            .font(.montserrat(size: 18))
                             .lineSpacing(4)
                     }
                     .foregroundStyle(Color(.red))

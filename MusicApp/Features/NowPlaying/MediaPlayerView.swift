@@ -149,11 +149,11 @@ struct MediaPlayerView: View {
                 if isPlayerMinimised {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(song.title)
-                            .font(.system(size: 20, weight: .bold))
+                            .font(.montserrat(size: 20, weight: .bold))
                             .lineLimit(1)
                         
                         Text(song.artistName)
-                            .font(.system(size: 16))
+                            .font(.montserrat(size: 16))
                             .lineLimit(1)
                     }
                     .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -190,13 +190,28 @@ struct MediaPlayerView: View {
                             }
                             
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(song.title)
-                                    .font(.system(size: 22, weight: .bold))
-                                    .lineLimit(1)
-                                
-                                Text(song.artistName)
-                                    .font(.system(size: 17))
-                                    .lineLimit(1)
+                                MarqueeText(
+                                    text: song.title,
+                                    font: .montserrat(size: 20, weight: .bold),
+                                    color: primaryColor
+                                )
+                                .frame(height: 28)
+                                .clipped()
+
+                                MarqueeText(
+                                    text: song.artistName,
+                                    font: .montserrat(size: 16),
+                                    color: primaryColor.opacity(0.8)
+                                )
+                                .frame(height: 22)
+                                .clipped()
+//                                Text(song.title)
+//                                    .font(.montserrat(size: 20, weight: .bold))
+//                                    .lineLimit(1)
+//                                
+//                                Text(song.artistName)
+//                                    .font(.montserrat(size: 16))
+//                                    .lineLimit(1)
                             }
                         }
                         .padding(.bottom, 2)
@@ -206,7 +221,7 @@ struct MediaPlayerView: View {
 //                        Button(action: toggleMenu) {
 //                            Image(systemName: "ellipsis")
 //                                .fontWeight(.bold)
-//                                .font(Font.system(size: 20, weight: .bold))
+//                                .font(Font.montserrat(size: 20, weight: .bold))
 //                                .foregroundColor(primaryColor)
 //                                .frame(width: 32, height: 32)
 //                                .background(primaryColor.opacity(0.12))
@@ -220,7 +235,7 @@ struct MediaPlayerView: View {
                     // Progress bar
                     HStack(spacing: 12) {
                         Text(formatTime(clampedPlayback))
-                            .font(.system(size: 14))
+                            .font(.montserrat(size: 14))
                             .fontWeight(.bold)
                         
                         GeometryReader { geometry in
@@ -281,7 +296,7 @@ struct MediaPlayerView: View {
                         .animation(.easeInOut(duration: 0.25), value: isDraggingProgress)
 
                         Text("-" + formatTime(remaining))
-                            .font(.system(size: 14))
+                            .font(.montserrat(size: 14))
                             .fontWeight(.bold)
                     }
                     .padding(.horizontal, 12)
@@ -304,7 +319,7 @@ struct MediaPlayerView: View {
                             let isActive = player.state.shuffleMode == .songs
                             
                             Image(systemName: "shuffle")
-                                .font(.system(size: 20, weight: isActive ? .bold : .regular))
+                                .font(.montserrat(size: 20, weight: isActive ? .bold : .regular))
                                 .foregroundStyle(
                                     isActive
                                     ? primaryColor.opacity(0.95)
@@ -344,7 +359,7 @@ struct MediaPlayerView: View {
                             }) {
                                 Image(systemName: "backward.end.fill")
                             }
-                            .font(.system(size: 32))
+                            .font(.montserrat(size: 32))
 //                            .frame(width: 48, height: 48)
 //                            .glassEffect(.clear)
                             
@@ -357,7 +372,7 @@ struct MediaPlayerView: View {
                                     .id(isPlaying) // force view swap
                                     .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPlaying)
                             }
-                            .font(.system(size: 48))
+                            .font(.montserrat(size: 48))
 //                            .frame(width: 64, height: 64)
 //                            .glassEffect(.clear)
                             
@@ -368,7 +383,7 @@ struct MediaPlayerView: View {
                             }) {
                                 Image(systemName: "forward.end.fill")
                             }
-                            .font(.system(size: 32))
+                            .font(.montserrat(size: 32))
 //                            .frame(width: 48, height: 48)
 //                            .glassEffect(.clear)
                         }
@@ -388,7 +403,7 @@ struct MediaPlayerView: View {
                             let isNotRepeating = player.state.repeatMode == MusicPlayer.RepeatMode.none
                             
                             Image(systemName: player.state.repeatMode == .one ? "repeat.1" : "repeat")
-                                .font(.system(size: 20, weight: isNotRepeating ? .regular : .bold))
+                                .font(.montserrat(size: 20, weight: isNotRepeating ? .regular : .bold))
                                 .foregroundStyle(
                                     isNotRepeating
                                     ? primaryColor.opacity(0.6)

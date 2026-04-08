@@ -22,7 +22,7 @@ struct LargeMusicItemBlock: View {
                 ArtworkView(artwork: artwork, width: size, height: size, cornerRadius: 6)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
-                        .font(.system(size: 16))
+                        .font(.montserrat(size: 16))
                         .fontWeight(.bold)
                         .foregroundColor(.customPurple)
                         .lineLimit(1)
@@ -30,7 +30,7 @@ struct LargeMusicItemBlock: View {
                     
                     if (artistName != nil) {
                         Text(artistName ?? "")
-                            .font(.system(size: 14))
+                            .font(.montserrat(size: 14))
                             .foregroundColor(.customLightPurple)
                             .lineLimit(1)
                             .frame(width: size, alignment: .leading)
@@ -39,7 +39,7 @@ struct LargeMusicItemBlock: View {
 
                 if let plays = playCount {
                     Text(plays.formatted() + " plays")
-                        .font(.system(size: 14))
+                        .font(.montserrat(size: 14))
                         .foregroundColor(.customLightPurple)
                         .lineLimit(1)
                 }

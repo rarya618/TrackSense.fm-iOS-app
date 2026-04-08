@@ -1,6 +1,6 @@
 //
 //  AddToPlaylist.swift
-//  Resonate
+//  TrackSense
 //
 //  Created by Russal Arya on 6/11/2025.
 //
@@ -32,7 +32,7 @@ struct AddToPlaylist: View {
                         HStack(spacing: 12) {
                             HStack(alignment: .center) {
                                 Image(systemName: "plus")
-                                    .font(Font.system(size: 16, weight: .bold))
+                                    .font(Font.montserrat(size: 16, weight: .bold))
                                     .foregroundStyle(bgColor)
                                     .frame(width: 36, height: 36)
                             }
@@ -40,7 +40,7 @@ struct AddToPlaylist: View {
                             .cornerRadius(20)
                             
                             Text("New Playlist")
-                                .font(Font.system(size: 17, weight: .medium))
+                                .font(Font.montserrat(size: 17, weight: .medium))
                                 .foregroundStyle(color)
                             
                             Spacer()
@@ -50,7 +50,7 @@ struct AddToPlaylist: View {
                     
                     HStack {
                         Text("All Playlists")
-                            .font(Font.system(size: 17, weight: .bold))
+                            .font(Font.montserrat(size: 17, weight: .bold))
                             .foregroundStyle(color)
                         Spacer()
                     }

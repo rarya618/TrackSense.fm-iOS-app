@@ -207,7 +207,7 @@ struct HistoryEntry: Identifiable {
 //                .font(.caption.bold())
 //                .foregroundStyle(.secondary)
 //            Text("\(latestCount)")
-//                .font(.system(.title, design: .rounded).bold()) +
+//                .font(.montserrat(.title, design: .rounded).bold()) +
 //            Text(" plays today")
 //                .font(.callout)
 //                .foregroundStyle(.secondary)

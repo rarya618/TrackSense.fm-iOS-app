@@ -103,11 +103,11 @@ struct NowPlayingView: View {
                         VStack (alignment: .leading, spacing: 1) {
                             // Title + artist
                             Text(song.title)
-                                .font(.system(size: 14, weight: .bold))
+                                .font(.montserrat(size: 14, weight: .bold))
                                 .lineLimit(1)
                             
                             Text(song.artistName)
-                                .font(.system(size: 12))
+                                .font(.montserrat(size: 12))
                                 .lineLimit(1)
                         }
                         Spacer(minLength: 0)
@@ -119,7 +119,7 @@ struct NowPlayingView: View {
                             Image(systemName: isPlaying ? "pause.fill" : "play.fill")
                                 .id(isPlaying)
                         }
-                        .font(.system(size: 22, weight: .semibold))
+                        .font(.montserrat(size: 22, weight: .semibold))
                         .padding(8)
                         
                         Button(action: {
@@ -127,7 +127,7 @@ struct NowPlayingView: View {
                         }) {
                             Image(systemName: "forward.end.fill")
                         }
-                        .font(.system(size: 20))
+                        .font(.montserrat(size: 20))
                     }
                     .padding(.trailing, 3)
                 } else {

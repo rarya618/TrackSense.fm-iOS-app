@@ -69,13 +69,13 @@ struct SongsTabView: View {
                 if !songLibraryManager.isLoading {
                     VStack(spacing: 16) {
                         Image(systemName: "music.note.list")
-                            .font(.system(size: 60))
+                            .font(.montserrat(size: 60))
                             .foregroundColor(.secondary)
                         Text("No songs found")
-                            .font(.title2)
+                            .font(.montserrat(size: 36))
                             .fontWeight(.semibold)
                         Text("Your library songs will appear here")
-                            .font(.subheadline)
+                            .font(.montserrat(size: 20))
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                     }
@@ -87,7 +87,7 @@ struct SongsTabView: View {
                     ForEach(sortedKeys, id: \.self) { key in
                         VStack(alignment: .leading, spacing: 8) {
                             Text(key)
-                                .font(.system(size: 18))
+                                .font(.montserrat(size: 18))
                                 .fontWeight(.bold)
                                 .padding(.leading, 4)
                             

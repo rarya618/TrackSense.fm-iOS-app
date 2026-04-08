@@ -69,7 +69,7 @@ struct LibraryStats: View {
                 
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Library Stats")
-                        .font(.system(size: 24, weight: .bold))
+                        .font(.montserrat(size: 22, weight: .bold))
                     
                     VStack(spacing: 6) {
                         HStack(spacing: 6) {
@@ -84,8 +84,7 @@ struct LibraryStats: View {
                         StatContainerView(title: "Library Length", value: "\(libraryLengthHours) hours")
                     }
                 }
-                .padding(.top, 24)
-                .padding(.bottom, 22)
+                .padding(.vertical, 24)
                 .padding(.horizontal, 22)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .overlay(

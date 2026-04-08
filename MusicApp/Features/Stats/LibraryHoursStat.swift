@@ -27,11 +27,11 @@ struct LibraryHoursStat: View {
                     HStack (alignment: .top) {
                         VStack (alignment: .leading, spacing: 2) {
                             Text(hours.formatted())
-                            .font(.system(size: 32, weight: .bold))
+                                .font(.montserrat(size: 32, weight: .bold))
                             .foregroundStyle(Color.customPurple)
 
                             Text("hours of music played")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.montserrat(size: 16, weight: .bold))
                             .foregroundStyle(Color.customLightPurple)
                         }
 
@@ -42,7 +42,7 @@ struct LibraryHoursStat: View {
                         }) {
                             HStack {
                                 Image(systemName: "chart.xyaxis.line")
-                                    .font(.system(size: 18))
+                                    .font(.montserrat(size: 18))
                             }
                             .padding(.horizontal, 8)
                             .padding(.vertical, 10)
@@ -62,7 +62,7 @@ struct LibraryHoursStat: View {
                         s.append(AttributedString(" worth of music"))
                         return s
                     }())
-                    .font(.system(size: 12, weight: .regular))
+                    .font(.montserrat(size: 12, weight: .regular))
                     .foregroundStyle(Color.customLightPurple)
                 }
             }

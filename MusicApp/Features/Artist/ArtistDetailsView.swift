@@ -71,12 +71,13 @@ struct ArtistDetailsView: View {
                     )
 
                     Text(name)
-                        .font(.system(size: 20, weight: .bold))
+                        .font(.montserrat(size: 20, weight: .bold))
                         .lineLimit(nil) // allow wrapping if needed
                         .foregroundStyle(primaryColor)
                         .multilineTextAlignment(.center)
                     
                 }
+                .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.horizontal, 0)
                 .padding(.vertical, 0)
 

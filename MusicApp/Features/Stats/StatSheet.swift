@@ -1,6 +1,6 @@
 //
 //  StatSheet.swift
-//  MusicApp
+//  TrackSense
 //
 //  Created by Russal Arya on 21/11/2025.
 //
@@ -41,7 +41,7 @@ struct StatSheet: View {
                             )
                             
                             Text("These insights summarize how your listening habits evolve – including daily growth, weekly momentum, consistency, and streaks – based on your cumulative data.")
-                                .font(.footnote)
+                                .font(.montserrat(size: 12))
                                 .foregroundStyle(.secondary)
                                 .padding(.bottom, 24)
                                 .padding(.horizontal, 12)

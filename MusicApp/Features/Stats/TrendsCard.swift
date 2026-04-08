@@ -18,15 +18,25 @@ struct TrendsCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text("Trends")
-                .font(.system(size: 24, weight: .bold))
+            HStack(spacing: 6) {
+                Text("Trends")
+                    .font(.montserrat(size: 22, weight: .bold))
+                
+                Text("beta")
+                    .font(.montserrat(size: 12, weight: .semibold))
+                    .cornerRadius(.infinity)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 4)
+                    .foregroundStyle(Color.resonateWhite)
+                    .backgroundStyle(Color.resonatePurple)
+            }
             
             if let s = stats {
                 
                 // MARK: - Daily Growth Section
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Daily Growth")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.montserrat(size: 16, weight: .bold))
                         .foregroundStyle(.secondary)
                     
                     HStack(spacing: 14) {
@@ -58,26 +68,26 @@ struct TrendsCard: View {
                 // MARK: - Weekly Momentum
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Weekly Momentum")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.montserrat(size: 16, weight: .bold))
                         .foregroundStyle(.secondary)
                     
                     HStack(spacing: 12) {
                         Text(s.weekTrendIcon)
                             .foregroundStyle(s.weekTrendColor)
-                            .font(.title3.weight(.bold))
+                            .font(.montserrat(size: 20, weight: .bold))
                         
-                        VStack(alignment: .leading) {
+                        VStack(alignment: .leading, spacing: 1) {
                             Text("This Week: +\(s.week1) \(unitLabel)")
-                                .font(.headline)
+                                .font(.montserrat(size: 16, weight: .bold))
                             Text("Last Week: +\(s.week2) \(unitLabel)")
-                                .font(.subheadline)
+                                .font(.montserrat(size: 14))
                                 .foregroundStyle(.secondary)
                         }
                         
                         Spacer()
                         
                         Text("\(s.weekPctChange)%")
-                            .font(.headline)
+                            .font(.montserrat(size: 18, weight: .bold))
                             .foregroundStyle(s.weekTrendColor)
                     }
                 }
@@ -87,14 +97,14 @@ struct TrendsCard: View {
                 // MARK: - Consistency Score
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Consistency")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.montserrat(size: 16, weight: .bold))
                         .foregroundStyle(.secondary)
                     
                     HStack {
                         Text("\(s.consistency)%")
-                            .font(.title3.bold())
+                            .font(.montserrat(size: 20, weight: .bold))
                         Text(s.consistencyDescription)
-                            .font(.subheadline)
+                            .font(.montserrat(size: 16))
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -104,7 +114,7 @@ struct TrendsCard: View {
                 // MARK: - Streaks
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Listening Streak")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.montserrat(size: 16, weight: .bold))
                         .foregroundStyle(.secondary)
                     
                     HStack(spacing: 18) {
@@ -137,10 +147,10 @@ struct TrendMetric: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
-                .font(.caption)
+                .font(.montserrat(size: 12))
                 .foregroundStyle(.secondary)
             Text(value)
-                .font(.headline)
+                .font(.montserrat(size: 16, weight: .bold))
         }
     }
 }

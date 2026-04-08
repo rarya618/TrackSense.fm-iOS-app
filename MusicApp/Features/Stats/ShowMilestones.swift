@@ -16,7 +16,7 @@ struct ShowMilestones: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
 //            Text(title)
-//                .font(.system(size: 20, weight: .bold))
+//                .font(.montserrat(size: 20, weight: .bold))
 //                .foregroundColor(color)
 
             MilestonesChartView(data: milestoneData)
@@ -32,31 +32,23 @@ struct ShowMilestones: View {
 
                     HStack(spacing: 4) {
                         Image(systemName: achieved ? "trophy.fill" : "trophy")
-                            .font(.system(size: 18, weight: .semibold))
+                            .font(.montserrat(size: 18, weight: .semibold))
                             .foregroundColor(achieved ? color : .gray)
 
-                        VStack(spacing: 2) {
+                        VStack(spacing: 1) {
                             Text(threshold >= 1000 ? "≥ \(threshold/1000)k plays" : "≥ \(threshold) plays")
-                                .font(.caption)
+                                .font(.montserrat(size: 12, weight: .medium))
                                 .foregroundStyle(.secondary)
 
                             Text("\(count)")
-                                .font(.headline.bold())
+                                .font(.montserrat(size: 18, weight: .bold))
                                 .foregroundStyle(achieved ? color : .gray)
                         }
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 10)
-                    .background(
-                        RoundedRectangle(cornerRadius: .infinity)
-                            .fill(
-                                achieved
-                                ? color.opacity(0.1)
-                                : Color.gray.opacity(0.05)
-                            )
-                    )
+                    .padding(.vertical, 8)
                     .overlay(
-                        RoundedRectangle(cornerRadius: .infinity)
+                        RoundedRectangle(cornerRadius: 16)
                             .strokeBorder(
                                 achieved ? color.opacity(0.25) : Color.gray.opacity(0.2),
                                 lineWidth: 1
@@ -66,13 +58,12 @@ struct ShowMilestones: View {
                 }
             }
         }
-//        .padding()
         .padding(.top, 22)
         .padding(.bottom, 20)
         .padding(.horizontal, 20)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: 16)
                 .stroke(Color.resonatePurple.opacity(0.3), lineWidth: 1)
         )
         .padding(.horizontal)

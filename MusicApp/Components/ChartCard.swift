@@ -16,7 +16,7 @@ struct ChartCard<T: CloudDecodable>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(title)
-                .font(.system(size: 24, weight: .bold))
+                .font(.montserrat(size: 22, weight: .bold))
                 .padding(.horizontal, 20)
 
             if let cloud = cloudData,

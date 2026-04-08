@@ -1,6 +1,6 @@
 //
 //  TopArtistsView.swift
-//  Resonate
+//  TrackSense
 //
 //  Created by Russal Arya on 19/10/2025.
 //

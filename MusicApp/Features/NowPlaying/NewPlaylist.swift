@@ -26,7 +26,7 @@ struct NewPlaylist: View {
                 // Playlist name input
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Name")
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(.montserrat(size: 17, weight: .semibold))
                     TextField("Playlist name", text: $name)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
@@ -37,7 +37,7 @@ struct NewPlaylist: View {
                 // Playlist description input
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Description (optional)")
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(.montserrat(size: 17, weight: .semibold))
                     TextEditor(text: $description)
                         .scrollContentBackground(.hidden)
                         .frame(height: 100)

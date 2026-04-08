@@ -54,7 +54,7 @@ struct MenuRow: View {
                 if let icon = menuItem.icon {
                     Image(systemName: icon)
                     .fontWeight(.medium)
-                    .font(Font.system(size: 20))
+                    .font(Font.montserrat(size: 20))
                     .frame(width: 32)
                 }
                 
@@ -63,7 +63,7 @@ struct MenuRow: View {
             }
         }
         .foregroundStyle(menuItem.role == .destructive ? Color.red : Color.customDark)
-        .font(.system(size: 16, weight: .semibold))
+        .font(.montserrat(size: 16, weight: .semibold))
         .padding(.vertical, 10)
     }
 }
@@ -300,12 +300,12 @@ struct CustomMenu: View {
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.montserrat(size: 16, weight: .bold))
                         .lineLimit(1)
                     
                     if let subtitle = subtitle {
                         Text(subtitle)
-                            .font(.system(size: 15))
+                            .font(.montserrat(size: 15))
                             .lineLimit(1)
                     }
                 }

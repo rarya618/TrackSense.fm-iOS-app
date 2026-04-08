@@ -17,7 +17,7 @@ struct AlbumSection: View {
         VStack(alignment: .leading, spacing: 8) {
             // Section header
             Text(key)
-                .font(.system(size: 18))
+                .font(.montserrat(size: 18))
                 .fontWeight(.bold)
                 .padding(.leading, 4)
             

@@ -14,9 +14,8 @@ struct PageHeader: View {
     var body: some View {
         HStack() {
             Text(text)
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .padding(.top)
+                .font(.montserrat(size: 32, weight: .bold))
+                .padding(.top, 8)
             
             Spacer()
         }
@@ -32,13 +31,13 @@ struct SectionHeader: View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(Color.resonatePurple)
+                    .font(.montserrat(size: 20, weight: .bold))
+                    .foregroundStyle(Color.primary)
                 
                 
                 Text(subtitle)
-                    .font(Font.system(size: 15))
-                    .foregroundStyle(Color.resonateLightPurple)
+                    .font(.montserrat(size: 15))
+                    .foregroundStyle(Color.secondary)
             }
             Spacer()
         }
@@ -203,7 +202,7 @@ struct HomeTabButton<Destination: View>: View {
             Spacer()
             Image(systemName: "chevron.right")
         }
-            .font(Font.system(size: 16, weight: .bold))
+            .font(.montserrat(size: 16, weight: .bold))
             .padding(.horizontal, 20)
             .padding(.vertical, 16)
             .foregroundColor(.resonatePurple)

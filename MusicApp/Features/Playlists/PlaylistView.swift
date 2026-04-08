@@ -105,7 +105,7 @@ struct PlaylistView: View {
                                     VStack(alignment: .leading, spacing: 12) {
                                         Text("Stats")
                                             .fontWeight(.bold)
-                                            .font(.system(size: 24))
+                                            .font(.montserrat(size: 24))
                                         
                                         // Playlist Stats
                                         PlaylistStatsView (

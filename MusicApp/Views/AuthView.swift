@@ -1,6 +1,6 @@
 //
 //  AuthView.swift
-//  Resonate
+//  TrackSense
 //
 //  Created by Russal Arya on 17/9/2025.
 //
@@ -28,8 +28,14 @@ struct AuthView: View {
     @State private var userToken: String?
     
     var body: some View {
-        VStack(spacing: 24) {
-            NoteFromMeView()
+        ZStack(alignment: .bottom) {
+            ScrollView {
+                NoteFromMeView()
+                    .padding(.horizontal)
+                    .padding(.top, 70)
+                    .padding(.bottom, 120)
+            }
+            .ignoresSafeArea()
             
             StandardButton(
                 label: "Get started",
@@ -39,8 +45,8 @@ struct AuthView: View {
                     }
                 }
             )
+            .padding(.horizontal)
         }
-        .padding()
     }
 
     // Handle full flow
@@ -62,25 +68,29 @@ struct AuthView: View {
 
         do {
             let devToken = try await fetchDeveloperToken()
-            // Create an instance of the provider and pass options as required by the API
             let provider = MusicUserTokenProvider()
             let token = try await provider.userToken(for: devToken, options: .init())
             await MainActor.run {
                 self.userToken = token
+                self.isLoading = false
+                onAuthorized(token) // ← add this
             }
         } catch {
             await MainActor.run {
                 self.errorMessage = "Failed to get user token: \(error.localizedDescription)"
+                self.isLoading = false
             }
         }
-
-        await MainActor.run { self.isLoading = false }
     }
 
 
     func fetchDeveloperToken() async throws -> String {
-        // ⚠️ ONLY for testing / prototyping
-        return "eyJhbGciOiJFUzI1NiIsImtpZCI6IlhQOUg4VDI4NEgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJXNlk1N0hVNE1RIiwiaWF0IjoxNzU4MDEwMjczLCJleHAiOjE3NzM1NTg2NzN9.BtL-I5JmKHdb7hZmcYSoJwnaxoJ1XtwYOsCggrxVsLSob4IH4F8ilmpXuoBIx9fmndd3kMg2LCS7uyGOowQENQ"
+        let url = URL(string: "https://getmusictoken-6jveqlm3va-uc.a.run.app")!
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let response = try JSONDecoder().decode([String: String].self, from: data)
+        guard let token = response["token"] else {
+            throw URLError(.badServerResponse)
+        }
+        return token
     }
 }
-
