@@ -21,7 +21,7 @@ struct LyricsView: View {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .font(.montserrat(size: 18))
                         
-                        Text("Lyrics are not available in Resonate at this time")
+                        Text("Lyrics are not available in the TrackSense.fm app at this time")
                             .font(.montserrat(size: 18))
                             .lineSpacing(4)
                     }

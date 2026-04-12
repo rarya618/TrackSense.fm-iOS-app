@@ -30,9 +30,9 @@ struct LibraryStats: View {
         if songs.isEmpty {
             ClassicLoadingView(text: "Loading data")
         } else {
-            VStack(spacing: 6) {
+            VStack(spacing: 24) {
                 VStack(spacing: 8) {
-                    SectionHeader(title: "Milestones", subtitle: "Track your listening milestones")
+                    SectionHeader(title: "Milestones", subtitle: "How deep your listening goes")
                     
                     CustomPicker(
                         color: .resonatePurple,
@@ -48,28 +48,32 @@ struct LibraryStats: View {
                     TabView(selection: $selectedMilestonePage) {
                         ShowMilestones(
                             title: "Songs",
-                            milestoneData: songsMilestoneData
+                            milestoneData: songsMilestoneData,
+                            totalCount: songs.count
                         )
-                            .tag(0)
+                        .tag(0)
+                        
                         ShowMilestones(
                             title: "Albums",
-                            milestoneData: albumsMilestoneData
+                            milestoneData: albumsMilestoneData,
+                            totalCount: albumStats.count
                         )
-                            .tag(1)
+                        .tag(1)
+                        
                         ShowMilestones(
                             title: "Artists",
-                            milestoneData: artistsMilestoneData
+                            milestoneData: artistsMilestoneData,
+                            totalCount: artistStats.count
                         )
-                            .tag(2)
+                        .tag(2)
                     }
-                    .frame(height: 420)
+                    .frame(height: 400)
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 }
                 .padding(.top, 8)
                 
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Library Stats")
-                        .font(.montserrat(size: 22, weight: .bold))
+                    SectionHeader(title: "Library Stats", subtitle: "See your stats in a glance")
                     
                     VStack(spacing: 6) {
                         HStack(spacing: 6) {
@@ -83,16 +87,15 @@ struct LibraryStats: View {
                         
                         StatContainerView(title: "Library Length", value: "\(libraryLengthHours) hours")
                     }
+                    .padding(.horizontal)
                 }
-                .padding(.vertical, 24)
-                .padding(.horizontal, 22)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.resonatePurple.opacity(0.3), lineWidth: 1)
-                )
-                .padding(.horizontal)
-                .padding(.top, 20)
+//                .padding(.vertical, 24)
+//                .padding(.horizontal, 22)
+//                .clipShape(RoundedRectangle(cornerRadius: 16))
+//                .overlay(
+//                    RoundedRectangle(cornerRadius: 16)
+//                        .stroke(Color.resonatePurple.opacity(0.3), lineWidth: 1)
+//                )
 
             }
             .task {

@@ -18,18 +18,11 @@ struct TrendsCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            HStack(spacing: 6) {
-                Text("Trends")
-                    .font(.montserrat(size: 22, weight: .bold))
-                
-                Text("beta")
-                    .font(.montserrat(size: 12, weight: .semibold))
-                    .cornerRadius(.infinity)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 4)
-                    .foregroundStyle(Color.resonateWhite)
-                    .backgroundStyle(Color.resonatePurple)
-            }
+            SectionHeader(
+                title: "Trends",
+                subtitle: "Currently in beta",
+                hasLeadingPadding: false
+            )
             
             if let s = stats {
                 
@@ -128,14 +121,6 @@ struct TrendsCard: View {
                     .foregroundStyle(.secondary)
             }
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 22)
-        .padding(.bottom, 20)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.resonatePurple.opacity(0.3), lineWidth: 1)
-        )
     }
 }
 
@@ -242,30 +227,7 @@ extension TrendsCard {
         let pct = week2 > 0 ? Int(Double(week1 - week2) / Double(week2) * 100) : 0
         let weekColor: Color = pct >= 0 ? .green : .red
         let weekIcon = pct >= 0 ? "▲" : "▼"
-
-        // Consistency (MAD-based — robust median absolute deviation method)
-        let weekValues = last7.map { Double($0) }
-        let sortedWeek = weekValues.sorted()
-        let median = sortedWeek[sortedWeek.count / 2]
-
-        let deviations = weekValues.map { abs($0 - median) }.sorted()
-        let mad = deviations[deviations.count / 2]
-
-        // Relative deviation (normalized variability)
-        let relative = mad / max(median, 1)
-
-        // Convert to 0–100 score: lower variability → higher score
-        let consistencyScore = max(0, min(100, Int((1 / (1 + relative)) * 100)))
-
-        let consistencyDesc: String = {
-            switch consistencyScore {
-            case 85...100: return "Very consistent listener"
-            case 60..<85:  return "Pretty regular"
-            case 30..<60:  return "Some fluctuation"
-            default:       return "Listening habits vary a lot"
-            }
-        }()
-
+        
         // Streaks
         var longest = 0
         var current = 0
@@ -277,6 +239,55 @@ extension TrendsCard {
                 current = 0
             }
         }
+
+        // Consistency (MAD-based)
+        let weekValues = last7.map { Double($0) }
+        let sortedWeek = weekValues.sorted()
+
+        // Correct median for any array length
+        let mid = sortedWeek.count / 2
+        let median = sortedWeek.count % 2 == 0
+            ? (sortedWeek[mid - 1] + sortedWeek[mid]) / 2.0
+            : sortedWeek[mid]
+
+        // No listens = no meaningful consistency score
+        guard median > 0 else {
+            return TrendStats(
+                daily: dailyGrowth,
+                yesterdayGrowth: yesterday,
+                sevenDayAvg: avg7,
+                peakGrowth: peak,
+                week1: week1,
+                week2: week2,
+                weekPctChange: pct,
+                weekTrendColor: weekColor,
+                weekTrendIcon: weekIcon,
+                consistency: 0,
+                consistencyDescription: "No listening data",
+                currentStreak: current,
+                longestStreak: longest,
+                sparklineData: dailyGrowth.enumerated().map { SparkItem(index: $0.offset, value: $0.element) }
+            )
+        }
+
+        // Correct MAD median
+        let deviations = weekValues.map { abs($0 - median) }.sorted()
+        let madMid = deviations.count / 2
+        let mad = deviations.count % 2 == 0
+            ? (deviations[madMid - 1] + deviations[madMid]) / 2.0
+            : deviations[madMid]
+
+        let relative = mad / median
+        let consistencyScore = max(0, min(100, Int((1 / (1 + relative)) * 100)))
+
+        let consistencyDesc: String = {
+            switch consistencyScore {
+            case 85...100: return "Very consistent listener"
+            case 60..<85:  return "Pretty regular"
+            case 30..<60:  return "Some fluctuation"
+            default:       return "Listening habits vary a lot"
+            }
+        }()
 
         return TrendStats(
             daily: dailyGrowth,

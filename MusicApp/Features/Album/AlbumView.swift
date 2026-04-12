@@ -1,6 +1,6 @@
 //
 //  AlbumView.swift
-//  Resonate
+//  TrackSense
 //
 //  Created by Russal Arya on 18/9/2025.
 //
@@ -8,36 +8,6 @@
 import SwiftUI
 import MusicKit
 import Charts
-
-struct TrackChartView: View {
-    let tracks: MusicItemCollection<Track>
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Tracks")
-                .font(.system(size: 24, weight: .bold))
-                .padding(.horizontal, 18)
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                Chart {
-                    ForEach(Array(tracks.enumerated()), id: \.element.id) { index, track in
-                        if let count = track.playCount {
-                            BarMark(
-                                x: .value("Track", track.title),
-                                y: .value("Plays", count)
-                            )
-                        }
-                    }
-                }
-                .frame(width: CGFloat(50 * tracks.count), height: 240)
-                .padding(.horizontal, 18)
-            }
-            .frame(height: 240)
-        }
-        .padding(.vertical, 20)
-        .glassEffect(in: RoundedRectangle(cornerRadius: 16))
-    }
-}
 
 struct AlbumView: View {
     let album: Album
@@ -112,9 +82,8 @@ struct AlbumView: View {
                                 ]
                             )
                         }
-                        .padding(.top, 6)
-                        .padding(.bottom, 18)
-                        .padding(.leading, 4)
+                        .padding(.top, 2)
+                        .padding(.bottom, 12)
 
                         if currentSection == 0 {
                             // Album tracks
@@ -123,20 +92,22 @@ struct AlbumView: View {
                                 adjustedArtworkColor: adjustedArtworkColor,
                                 setSelectedTrack: setSelectedTrack
                             )
-                            .padding(.horizontal, 20)
+                            .padding(.horizontal)
                         }
                         else if currentSection == 1 {
-                            VStack(alignment: .leading, spacing: 20) {
+                            VStack(alignment: .leading, spacing: 24) {
                                 VStack(alignment: .leading, spacing: 18) {
                                     // MARK: - Chart Card
                                     ChartCard(
                                         title: "Play History",
-                                        cloudData: cloudAlbumData
+                                        cloudData: cloudAlbumData,
+                                        color: adjustedArtworkColor
                                     )
                                     
                                     // MARK: - Description
                                     Text("This chart shows how your total plays have changed over time. Data updates when content is synced to the cloud.")
-                                        .font(.footnote)
+                                        .font(.montserrat(size: 13))
+                                        .lineSpacing(4)
                                         .foregroundStyle(.secondary)
                                         .padding(.bottom, 10)
                                 }
@@ -146,14 +117,17 @@ struct AlbumView: View {
                                         history: cloud.history,
                                         unitLabel: "plays"
                                     )
+                                    .padding(.horizontal)
                                 }
                                 
                                 TrackChartView(tracks: tracks)
+                                    .padding(.horizontal)
                                 
                                 VStack(alignment: .leading, spacing: 12) {
-                                    Text("Stats")
-                                        .fontWeight(.bold)
-                                        .font(.system(size: 24))
+                                    SectionHeader(
+                                        title: "Stats",
+                                        subtitle: "See your albums stats in a glance"
+                                    )
                                     
                                     // Album Stats
                                     AlbumStatsView (
@@ -161,14 +135,10 @@ struct AlbumView: View {
                                         playCount: playCount,
                                         timePlayed: timePlayed
                                     )
+                                    .padding(.horizontal)
                                 }
-                                .padding(.top, 22)
-                                .padding(.bottom, 20)
-                                .padding(.horizontal, 20)
-                                .glassEffect(in: RoundedRectangle(cornerRadius: 16))
                             }
                             .foregroundColor(adjustedArtworkColor)
-                            .padding(.horizontal, 20)
                         }
 
                         ViewSpacer()
@@ -176,7 +146,7 @@ struct AlbumView: View {
                     .padding(.top, 20)
                     .frame(maxWidth: .infinity)
                     .background(Color.resonateWhite.ignoresSafeArea(edges: .bottom))
-                    .cornerRadius(28)
+                    .cornerRadius(20)
                 }
             }
             .ignoresSafeArea(edges: .vertical) // extend under status bar

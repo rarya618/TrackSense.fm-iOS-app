@@ -11,18 +11,22 @@ struct StandardButton: View {
     let label: String
     var bgColor: Color = .resonatePurple
     var color: Color = .resonateWhite
+    var isDisabled: Bool = false
     let action: () -> Void
     
     var body: some View {
-        Button(label) {
-            action()
+        Button(action: action) {
+            Text(label)
+                .foregroundStyle(color)
+                .font(.montserrat(size: 17, weight: .bold))
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(bgColor)
+                .contentShape(Rectangle())
         }
-        .foregroundColor(color)
-        .font(.montserrat(size: 16, weight: .bold))
-        .padding()
-        .frame(maxWidth: .infinity)
+        .buttonStyle(.plain)
         .background(bgColor)
-        .contentShape(Rectangle())
-        .cornerRadius(12)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .disabled(isDisabled)
     }
 }

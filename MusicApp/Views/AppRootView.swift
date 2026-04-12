@@ -183,6 +183,7 @@ struct AppRootView: View {
                 goToAlbum: goToAlbum,
                 goToArtist: goToArtist
             )
+                .environmentObject(overlayManager)
                 .presentationBackground(.clear)
         }
         .ignoresSafeArea(edges: .bottom)
@@ -353,26 +354,26 @@ struct BottomNav: View {
                         .stroke(Color.resonatePurple.opacity(0.3), lineWidth: 1)
                 )
                 
-                Spacer()
+//                Spacer()
                 
-                HStack(spacing: 2) {
-                    BottomNavButton(
-                        id: "search",
-                        currentPageId: currentPageId,
-                        icon: "magnifyingglass",
-                        label: "Search",
-                        setCurrentPageId: setCurrentPageId,
-                        horizontalPadding: 10,
-                        hideLabel: true
-                    )
-                }
-                .padding(4)
-                .background(Color.resonateWhite)
-                .clipShape(Capsule())
-                .overlay(
-                    Capsule()
-                        .stroke(Color.resonatePurple.opacity(0.3), lineWidth: 1)
-                )
+//                HStack(spacing: 2) {
+//                    BottomNavButton(
+//                        id: "search",
+//                        currentPageId: currentPageId,
+//                        icon: "magnifyingglass",
+//                        label: "Search",
+//                        setCurrentPageId: setCurrentPageId,
+//                        horizontalPadding: 10,
+//                        hideLabel: true
+//                    )
+//                }
+//                .padding(4)
+//                .background(Color.resonateWhite)
+//                .clipShape(Capsule())
+//                .overlay(
+//                    Capsule()
+//                        .stroke(Color.resonatePurple.opacity(0.3), lineWidth: 1)
+//                )
             }
         }
         .padding(.horizontal)

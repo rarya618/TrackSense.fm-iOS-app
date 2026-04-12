@@ -432,7 +432,6 @@ struct NowPlayingFullView: View {
                 .presentationDetents([.height(450)]) // allows swipe-up expansion
                 .presentationDragIndicator(.visible)
         }
-
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .cornerRadius(40)
         .ignoresSafeArea()

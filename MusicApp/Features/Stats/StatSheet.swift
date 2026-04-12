@@ -16,23 +16,23 @@ struct StatSheet: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack {
-                    VStack(alignment: .leading, spacing: 12) {
-                        // MARK: - Chart Card
-                        ChartCard(
-                            title: "History over time",
-                            cloudData: cloudData,
-                            hasValueProp: true
-                        )
-                        
-                        // MARK: - Description
-                        Text(historyDescription)
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            .padding(.bottom, 24)
-                            .padding(.horizontal, 12)
-                    }
+                VStack(alignment: .leading, spacing: 12) {
+                    // MARK: - Chart Card
+                    ChartCard(
+                        title: "History over time",
+                        cloudData: cloudData,
+                        hasValueProp: true
+                    )
                     
+                    // MARK: - Description
+                    Text(historyDescription)
+                        .font(.montserrat(size: 13))
+                        .lineSpacing(4)
+                        .foregroundStyle(.secondary)
+                        .padding(.bottom, 24)
+                        .padding(.horizontal, 12)
+                }
+                VStack {
                     if let cloud = cloudData {
                         VStack(alignment: .leading, spacing: 12) {
                             TrendsCard(
@@ -41,7 +41,8 @@ struct StatSheet: View {
                             )
                             
                             Text("These insights summarize how your listening habits evolve – including daily growth, weekly momentum, consistency, and streaks – based on your cumulative data.")
-                                .font(.montserrat(size: 12))
+                                .font(.montserrat(size: 13))
+                                .lineSpacing(4)
                                 .foregroundStyle(.secondary)
                                 .padding(.bottom, 24)
                                 .padding(.horizontal, 12)

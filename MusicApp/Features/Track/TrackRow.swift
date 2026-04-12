@@ -38,7 +38,7 @@ struct TrackRow: View {
                 artistName: track.artistName,
                 playCount: track.playCount,
                 removeSpacer: false,
-                removeEllipsis: false
+                removeEllipsis: true
             ) {
                 onTap()
             }
@@ -99,12 +99,12 @@ struct TrackRow: View {
                         }
                         .padding(.vertical, 14)
                         
-                        Button(action: {}) {
-                            Image(systemName: "ellipsis")
-                        }
-                        .fontWeight(.bold)
-                        .font(.montserrat(size: 24))
-                        .foregroundColor(adjustedArtworkColor)
+//                        Button(action: {}) {
+//                            Image(systemName: "ellipsis")
+//                        }
+//                        .fontWeight(.bold)
+//                        .font(.montserrat(size: 24))
+//                        .foregroundColor(adjustedArtworkColor)
                     }
                 }
                 .padding(.horizontal, 16)

@@ -147,8 +147,7 @@ struct DetailsView: View {
                     .multilineTextAlignment(.leading)
                     Spacer()
                 }
-                .padding(.horizontal, 6)
-                .padding(.vertical, 6)
+                .padding(.vertical, 8)
 
                 MusicItemButtons (
                     musicItem: musicItem,
@@ -162,7 +161,7 @@ struct DetailsView: View {
                     toggleMenu: toggleMenu
                 )
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal)
             .padding(.top, 110)
             .padding(.bottom, 10)
         }

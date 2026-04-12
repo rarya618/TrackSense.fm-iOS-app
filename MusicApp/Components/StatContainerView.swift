@@ -14,21 +14,21 @@ struct StatContainerView: View {
     
     var body: some View {
         HStack {
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 3) {
                 Text(value)
                     .font(.montserrat(size: 22, weight: .bold))
                     .foregroundStyle(.primary)
-                Text(title.uppercased())
-                    .font(.montserrat(size: 12, weight: .semibold))
-                    .foregroundStyle(.primary.opacity(0.8))
+                Text(title.lowercased())
+                    .font(.montserrat(size: 14, weight: .medium))
+                    .foregroundStyle(.secondary)
             }
             Spacer()
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.horizontal, 18)
+        .padding(.vertical, 13)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.gray.opacity(0.2))
+                .stroke(Color.resonatePurple.opacity(0.25))
         )
         .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
     }

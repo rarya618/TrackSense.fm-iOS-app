@@ -22,30 +22,6 @@ struct PageHeader: View {
     }
 }
 
-struct SectionHeader: View {
-    let title: String
-    let subtitle: String
-    var margin: CGFloat = 22
-    
-    var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.montserrat(size: 20, weight: .bold))
-                    .foregroundStyle(Color.primary)
-                
-                
-                Text(subtitle)
-                    .font(.montserrat(size: 15))
-                    .foregroundStyle(Color.secondary)
-            }
-            Spacer()
-        }
-        .padding(.leading)
-        .padding(.bottom, 4)
-    }
-}
-
 struct DisplayPlaylistsInGrid: View {
     let playlists: MusicItemCollection<Playlist>
     var errorMessage: String?

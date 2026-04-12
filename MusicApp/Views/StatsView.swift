@@ -1,5 +1,5 @@
 //
-//  HomeView.swift
+//  StatsView.swift
 //  TrackSense
 //
 //  Created by Russal Arya on 20/9/2025.
@@ -101,6 +101,24 @@ func getSortingMenu(
     ]
 }
 
+struct TopStatsToggleItem: View {
+    let displayItem: AnyView
+    let onSeeAll: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 18) {
+            displayItem
+                .padding(.horizontal)
+            
+            StandardButton(
+                label: "See all",
+                action: onSeeAll
+            )
+            .padding(.horizontal)
+        }
+    }
+}
+
 struct StatsView: View {
     let userToken: String
     
@@ -162,6 +180,9 @@ struct StatsView: View {
     func setCurrentSection(_ index: Int) {
         currentSection = index
     }
+    
+    // To prevent cloud sync on every reboot
+    @State private var inProductionMode = true
     
     var body: some View {
         NavigationStack {
@@ -278,58 +299,40 @@ struct StatsView: View {
                         .padding(.bottom, 6)
                         
                         TabView(selection: $currentSection) {
-                            VStack(spacing: 6) {
-                                DisplayTopSongs(
-                                    songs: Array(topSongs.prefix(limit)),
-                                    setSelectedSong: setSelectedSong,
-                                    isShowingPlays: isShowingPlays
-                                )
-                                .padding(.horizontal)
-                                
-                                StandardButton(
-                                    label: "See all",
-                                    action: {
-                                        buttonTapped = "songs"
-                                    }
-                                )
-                                .padding(.horizontal)
-                            }
+                            TopStatsToggleItem(
+                                displayItem: AnyView(
+                                    DisplayTopSongs(
+                                        songs: Array(topSongs.prefix(limit)),
+                                        setSelectedSong: setSelectedSong,
+                                        isShowingPlays: isShowingPlays
+                                    )
+                                ),
+                                onSeeAll: { buttonTapped = "songs" }
+                            )
                             .tag(0)
                             
-                            VStack(spacing: 6) {
-                                DisplayTopAlbums(
-                                    albumStats: Array(albumStats.prefix(limit)),
-                                    setSelectedAlbum: setSelectedAlbum,
-                                    isShowingPlays: isShowingPlays
-                                )
-                                .padding(.horizontal)
-                                
-                                StandardButton(
-                                    label: "See all",
-                                    action: {
-                                        buttonTapped = "albums"
-                                    }
-                                )
-                                .padding(.horizontal)
-                            }
+                            TopStatsToggleItem(
+                                displayItem: AnyView(
+                                    DisplayTopAlbums(
+                                        albumStats: Array(albumStats.prefix(limit)),
+                                        setSelectedAlbum: setSelectedAlbum,
+                                        isShowingPlays: isShowingPlays
+                                    )
+                                ),
+                                onSeeAll: { buttonTapped = "albums" }
+                            )
                             .tag(1)
                             
-                            VStack(spacing: 6) {
-                                DisplayTopArtists(
-                                    artistStats: Array(artistStats.prefix(limit)),
-                                    setSelectedArtist: setSelectedArtist,
-                                    isShowingPlays: isShowingPlays
-                                )
-                                .padding(.horizontal)
-                                
-                                StandardButton(
-                                    label: "See all",
-                                    action: {
-                                        buttonTapped = "artists"
-                                    }
-                                )
-                                .padding(.horizontal)
-                            }
+                            TopStatsToggleItem(
+                                displayItem: AnyView(
+                                    DisplayTopArtists(
+                                        artistStats: Array(artistStats.prefix(limit)),
+                                        setSelectedArtist: setSelectedArtist,
+                                        isShowingPlays: isShowingPlays
+                                    )
+                                ),
+                                onSeeAll: { buttonTapped = "artists" }
+                            )
                             .tag(2)
                         }
                         .frame(height: 450)
@@ -350,6 +353,10 @@ struct StatsView: View {
             .background(Color.resonateWhite)
             .refreshable {
                 await refreshStats()
+                
+                if inProductionMode {
+                    await syncToCloud()
+                }
             }
         }
         .sheet(isPresented: $isLibraryHoursGraphVisible) {
@@ -376,6 +383,10 @@ struct StatsView: View {
             guard !hasLoaded else { return }
             hasLoaded = true
             await refreshStats()
+            
+            if inProductionMode {
+                await syncToCloud()
+            }
         }
     }
     

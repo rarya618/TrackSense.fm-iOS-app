@@ -284,9 +284,16 @@ struct HistoryChart: View {
     let history: [String : [String : Int]]
     var isSong: Bool = false
     var hasValueProp: Bool = false
+    var color = Color.resonatePurple
     
     var body: some View {
-        WeeklyHistoryChart(history: history, isSong: isSong, hasValueProp: hasValueProp)
+        DottedHistoryChart(
+            history: history,
+            isSong: isSong,
+            hasValueProp: hasValueProp,
+            color: color
+        )
+//        WeeklyHistoryChart(history: history, isSong: isSong, hasValueProp: hasValueProp)
 //        let prop = hasValueProp ? "value" : (isSong ? "plays" : "totalPlays")
 //        let allValues = history.values.compactMap { $0[prop] }
 //        let minValue = (allValues.min() ?? 0)

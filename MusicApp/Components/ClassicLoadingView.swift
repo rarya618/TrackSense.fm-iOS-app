@@ -17,7 +17,7 @@ struct ClassicLoadingView: View {
             
             if let textFromInit = text {
                 Text(textFromInit)
-                    .font(.subheadline)
+                    .font(.montserrat(size: 12))
                     .foregroundColor(.secondary)
             }
         }

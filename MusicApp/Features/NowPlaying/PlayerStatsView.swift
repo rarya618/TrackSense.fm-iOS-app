@@ -22,9 +22,9 @@ struct PlayerStatsView: View {
                 if let song = song {
                     SongStatsView(
                         song: song,
-                        cloudData: cloudData
+                        cloudData: cloudData,
+                        color: color
                     )
-                    .padding(.horizontal, 24)
                     
                     Spacer()
                 }

@@ -12,33 +12,31 @@ struct ChartCard<T: CloudDecodable>: View {
     let cloudData: T?
     var isSong: Bool = false
     var hasValueProp: Bool = false
+    var color = Color.resonatePurple
+    
+    var subtitle: String = "How your plays have changed"
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(title)
-                .font(.montserrat(size: 22, weight: .bold))
-                .padding(.horizontal, 20)
-
+        VStack(alignment: .leading, spacing: 0) {
+            SectionHeader(
+                title: title,
+                subtitle: subtitle
+            )
+            
             if let cloud = cloudData,
                let history = cloud.history {
                 HistoryChart(
                     history: history,
                     isSong: isSong,
-                    hasValueProp: hasValueProp
+                    hasValueProp: hasValueProp,
+                    color: color
                 )
             } else {
                 Text("Cloud history unavailable")
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal)
             }
         }
-        .padding(.top, 22)
-        .padding(.bottom, 20)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.resonatePurple.opacity(0.3), lineWidth: 1)
-        )
     }
 }

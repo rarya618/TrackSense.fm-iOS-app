@@ -146,16 +146,19 @@ struct SongView: View {
                     
                     // MARK: - Content
                     VStack(spacing: 20) {
-                        SongStatsView(song: song, cloudData: cloudSongData)
+                        SongStatsView(
+                            song: song,
+                            cloudData: cloudSongData,
+                            color: betterTextColor
+                        )
                         
                         ViewSpacer()
                     }
                     .foregroundColor(betterTextColor)
-                    .padding(.horizontal, 20)
                     .padding(.top, 24)
                     .frame(maxWidth: .infinity)
                     .background(Color.resonateWhite.ignoresSafeArea(edges: .bottom))
-                    .cornerRadius(28)
+                    .cornerRadius(20)
                 }
             }
             .ignoresSafeArea(edges: .vertical) // extend under status bar

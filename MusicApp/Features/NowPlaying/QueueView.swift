@@ -23,7 +23,7 @@ struct QueueView: View {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .font(.montserrat(size: 18))
                         
-                        Text("Unfortunately, you cannot access the System Queue in TrackSense at this time")
+                        Text("Unfortunately, you cannot access the System Queue in  the TrackSense.fm app at this time")
                             .font(.montserrat(size: 18))
                             .lineSpacing(4)
                     }
