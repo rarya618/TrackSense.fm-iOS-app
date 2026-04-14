@@ -35,9 +35,8 @@ struct MusicItemButtons: View {
                 }
                 .frame(maxWidth: .infinity)
             }
-            .fontWeight(.bold)
+            .font(.montserrat(size: 16, weight: .bold))
             .foregroundColor(artworkColor)
-            .font(Font.system(size: 16))
             .padding(.horizontal, 24)
             .padding(.vertical, 14)
             .frame(maxWidth: .infinity)
@@ -50,9 +49,8 @@ struct MusicItemButtons: View {
 //                Button(action: {}) {
 //                    Image(systemName: "square.stack")
 //                }
-//                .fontWeight(.bold)
+//                .font(.montserrat(size: 20, weight: .bold))
 //                .foregroundColor(betterTextColor)
-//                .font(Font.system(size: 20))
 //                .frame(maxWidth: 48, maxHeight: 48)
 //                .glassEffect(.regular.tint(Color.resonateWhite.opacity(0.5)))
 //            } else {
@@ -60,8 +58,7 @@ struct MusicItemButtons: View {
 //                    Image(systemName: "shuffle")
 //                    Text("Shuffle")
 //                }
-//                .fontWeight(.bold)
-//                .font(Font.system(size: 16))
+//                .font(.montserrat(size: 16, weight: .bold))
 //                .foregroundColor(betterTextColor)
 //                .padding(.horizontal, 24)
 //                .padding(.vertical, 14)
@@ -72,22 +69,10 @@ struct MusicItemButtons: View {
             Button(action: toggleMenu) {
                 Image(systemName: "ellipsis")
             }
-            .fontWeight(.bold)
-            .font(Font.system(size: 28))
+            .font(.montserrat(size: 28, weight: .bold))
             .foregroundColor(betterTextColor)
             .frame(maxWidth: 48, maxHeight: 48)
             .glassEffect(.regular.tint(Color.resonateWhite.opacity(0.5)))
-            
-//            Menu {
-//                generateMenu(menuItems)
-//            } label: {
-//                Image(systemName: "ellipsis")
-//                    .fontWeight(.bold)
-//                    .font(Font.system(size: 28))
-//                    .foregroundColor(betterTextColor)
-//                    .frame(maxWidth: 48, maxHeight: 48)
-//                    .glassEffect(.regular.tint(Color.resonateWhite.opacity(0.5)))
-//            }
                 
 //            if song.hasLyrics {
 //                Button(action: {}) {

@@ -133,7 +133,7 @@ struct StatsView: View {
     @State private var artistStats: [ArtistStat] = []
     @State private var playlists: MusicItemCollection<Playlist> = []
     
-    @State private var libraryPlayedHours: Int = 0
+    @State private var libraryPlayedHours: Int?
     @State private var totalPlays: Int = 0
     
     @State private var selectedSong: Song?
@@ -191,7 +191,7 @@ struct StatsView: View {
                     HStack(alignment: .top) {
                         VStack(alignment: .leading, spacing: 4) {
                             PageHeader(text: "Stats")
-                            
+
                             Text("Last synced: \(lastStatsSync?.formatted(date: .abbreviated, time: .shortened) ?? "never")")
                                 .font(.montserrat(size: 14, weight: .medium))
                                 .foregroundStyle(Color.customLightPurple)
@@ -206,7 +206,7 @@ struct StatsView: View {
                                     Text("\(Int(syncProgress * 100))%")
                                         .monospacedDigit()
                                         .font(.montserrat(size: 16, weight: .semibold))
-                                    
+
 //                                    Text(syncStepDescription)
 //                                        .font(.montserrat(size: 14, weight: .medium))
 //                                        .foregroundColor(.secondary)
@@ -488,8 +488,8 @@ struct StatsView: View {
         let dateKey = sanitizeDate(Date.now)
         
         let updates: [String: Any] = [
-            "users/\(userID)/libraryPlayedHours/value": libraryPlayedHours,
-            "users/\(userID)/libraryPlayedHours/history/\(dateKey)/value": libraryPlayedHours,
+            "users/\(userID)/libraryPlayedHours/value": libraryPlayedHours ?? 0,
+            "users/\(userID)/libraryPlayedHours/history/\(dateKey)/value": libraryPlayedHours ?? 0,
             "users/\(userID)/totalPlays/value": totalPlays,
             "users/\(userID)/totalPlays/history/\(dateKey)/value": totalPlays
         ]

@@ -51,100 +51,100 @@ struct MediaPlayerView: View {
     let progressBarSize: CGFloat = 10
     
     var body: some View {
-        let size: CGFloat = isPlayerMinimised ? 72 : 338
+//        let size: CGFloat = isPlayerMinimised ? 72 : 338
         
         VStack(spacing: 24) {
             // Details
             HStack(spacing: 16) {
-                VStack {
-                    ArtworkView (
-                        artwork: song.artwork,
-                        width:  size,
-                        height: size,
-                        cornerRadius: isPlaying ? 10 : 20
-                    )
-                    .shadow(
-                        color: Color.black.opacity(0.25),
-                        radius: 25,
-                        x: 0,
-                        y: 8
-                    )
-                    .offset(x: swipeOffsetX)
-                    .rotationEffect(.degrees(Double(swipeOffsetX / 25)))
-                    .animation(.interactiveSpring(response: 0.25, dampingFraction: 0.9), value: swipeOffsetX)
-                    .scaleEffect(isPlayerMinimised ? 1.0 : 1.03)
-                    .animation(.spring(response: 0.45, dampingFraction: 0.85), value: isPlayerMinimised)
-                    .transition(.scale.combined(with: .opacity))
-                    .fixedSize(horizontal: false, vertical: false)
-                }
-                .simultaneousGesture(
-                    DragGesture(minimumDistance: 20, coordinateSpace: .local)
-                        .onChanged { value in
-                            // Avoid conflicts with progress scrubbing
-                            if isDraggingProgress { return }
-                            // Only treat predominantly horizontal drags as track swipes
-                            if abs(value.translation.width) > abs(value.translation.height) {
-                                isSwipingTrack = true
-                            }
-                            if isSwipingTrack {
-                                swipeOffsetX = value.translation.width
-                            }
-                        }
-                        .onEnded { value in
-                            defer { isSwipingTrack = false }
-
-                            if isDraggingProgress {
-                                swipeOffsetX = 0
-                                return
-                            }
-
-                            // Only act on predominantly horizontal swipes
-                            guard abs(value.translation.width) > abs(value.translation.height) else {
-                                swipeOffsetX = 0
-                                return
-                            }
-
-                            let direction: CGFloat = value.translation.width < 0 ? -1 : 1
-
-                            if value.translation.width <= -swipeThreshold {
-                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                                withAnimation(.easeInOut(duration: 0.18)) {
-                                    swipeOffsetX = direction * 420 // animate off to the left
-                                }
-                                Task {
-                                    try? await player.skipToNextEntry()
-                                    await MainActor.run {
-                                        withAnimation(.interactiveSpring(response: 0.28, dampingFraction: 0.9)) {
-                                            swipeOffsetX = 0
-                                        }
-                                    }
-                                }
-                            } else if value.translation.width >= swipeThreshold {
-                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                                withAnimation(.easeInOut(duration: 0.18)) {
-                                    swipeOffsetX = direction * 420 // animate off to the right
-                                }
-                                Task {
-                                    if clampedPlayback < 10 {
-                                        try? await player.skipToPreviousEntry()
-                                    } else {
-                                        player.restartCurrentEntry()
-                                    }
-                                    await MainActor.run {
-                                        withAnimation(.interactiveSpring(response: 0.28, dampingFraction: 0.9)) {
-                                            swipeOffsetX = 0
-                                        }
-                                    }
-                                }
-                            } else {
-                                // Not far enough: snap back
-                                withAnimation(.interactiveSpring(response: 0.28, dampingFraction: 0.9)) {
-                                    swipeOffsetX = 0
-                                }
-                            }
-                        }
-                )
-                .frame(width: size, height: size)
+//                VStack {
+//                    ArtworkView (
+//                        artwork: song.artwork,
+//                        width:  size,
+//                        height: size,
+//                        cornerRadius: isPlaying ? 10 : 20
+//                    )
+//                    .shadow(
+//                        color: Color.black.opacity(0.25),
+//                        radius: 25,
+//                        x: 0,
+//                        y: 8
+//                    )
+//                    .offset(x: swipeOffsetX)
+//                    .rotationEffect(.degrees(Double(swipeOffsetX / 25)))
+//                    .animation(.interactiveSpring(response: 0.25, dampingFraction: 0.9), value: swipeOffsetX)
+//                    .scaleEffect(isPlayerMinimised ? 1.0 : 1.03)
+//                    .animation(.spring(response: 0.45, dampingFraction: 0.85), value: isPlayerMinimised)
+//                    .transition(.scale.combined(with: .opacity))
+//                    .fixedSize(horizontal: false, vertical: false)
+//                }
+//                .simultaneousGesture(
+//                    DragGesture(minimumDistance: 20, coordinateSpace: .local)
+//                        .onChanged { value in
+//                            // Avoid conflicts with progress scrubbing
+//                            if isDraggingProgress { return }
+//                            // Only treat predominantly horizontal drags as track swipes
+//                            if abs(value.translation.width) > abs(value.translation.height) {
+//                                isSwipingTrack = true
+//                            }
+//                            if isSwipingTrack {
+//                                swipeOffsetX = value.translation.width
+//                            }
+//                        }
+//                        .onEnded { value in
+//                            defer { isSwipingTrack = false }
+//
+//                            if isDraggingProgress {
+//                                swipeOffsetX = 0
+//                                return
+//                            }
+//
+//                            // Only act on predominantly horizontal swipes
+//                            guard abs(value.translation.width) > abs(value.translation.height) else {
+//                                swipeOffsetX = 0
+//                                return
+//                            }
+//
+//                            let direction: CGFloat = value.translation.width < 0 ? -1 : 1
+//
+//                            if value.translation.width <= -swipeThreshold {
+//                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+//                                withAnimation(.easeInOut(duration: 0.18)) {
+//                                    swipeOffsetX = direction * 420 // animate off to the left
+//                                }
+//                                Task {
+//                                    try? await player.skipToNextEntry()
+//                                    await MainActor.run {
+//                                        withAnimation(.interactiveSpring(response: 0.28, dampingFraction: 0.9)) {
+//                                            swipeOffsetX = 0
+//                                        }
+//                                    }
+//                                }
+//                            } else if value.translation.width >= swipeThreshold {
+//                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+//                                withAnimation(.easeInOut(duration: 0.18)) {
+//                                    swipeOffsetX = direction * 420 // animate off to the right
+//                                }
+//                                Task {
+//                                    if clampedPlayback < 10 {
+//                                        try? await player.skipToPreviousEntry()
+//                                    } else {
+//                                        player.restartCurrentEntry()
+//                                    }
+//                                    await MainActor.run {
+//                                        withAnimation(.interactiveSpring(response: 0.28, dampingFraction: 0.9)) {
+//                                            swipeOffsetX = 0
+//                                        }
+//                                    }
+//                                }
+//                            } else {
+//                                // Not far enough: snap back
+//                                withAnimation(.interactiveSpring(response: 0.28, dampingFraction: 0.9)) {
+//                                    swipeOffsetX = 0
+//                                }
+//                            }
+//                        }
+//                )
+//                .frame(width: size, height: size)
                 
                 if isPlayerMinimised {
                     VStack(alignment: .leading, spacing: 4) {
@@ -189,7 +189,7 @@ struct MediaPlayerView: View {
                                 }
                             }
                             
-                            VStack(alignment: .leading, spacing: 4) {
+                            VStack(alignment: .leading, spacing: 3) {
                                 MarqueeText(
                                     text: song.title,
                                     font: .montserrat(size: 20, weight: .bold),
@@ -200,18 +200,11 @@ struct MediaPlayerView: View {
 
                                 MarqueeText(
                                     text: song.artistName,
-                                    font: .montserrat(size: 16),
+                                    font: .montserrat(size: 16, weight: .medium),
                                     color: primaryColor.opacity(0.8)
                                 )
                                 .frame(height: 22)
                                 .clipped()
-//                                Text(song.title)
-//                                    .font(.montserrat(size: 20, weight: .bold))
-//                                    .lineLimit(1)
-//                                
-//                                Text(song.artistName)
-//                                    .font(.montserrat(size: 16))
-//                                    .lineLimit(1)
                             }
                         }
                         .padding(.bottom, 2)

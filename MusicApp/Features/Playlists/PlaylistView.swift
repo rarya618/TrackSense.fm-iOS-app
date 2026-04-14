@@ -103,9 +103,11 @@ struct PlaylistView: View {
                                     TrackChartView(tracks: tracks)
                                     
                                     VStack(alignment: .leading, spacing: 12) {
-                                        Text("Stats")
-                                            .fontWeight(.bold)
-                                            .font(.montserrat(size: 24))
+                                        SectionHeader(
+                                            title: "Stats",
+                                            subtitle: "See your playlist stats in a glance",
+                                            hasLeadingPadding: false
+                                        )
                                         
                                         // Playlist Stats
                                         PlaylistStatsView (
@@ -113,23 +115,19 @@ struct PlaylistView: View {
                                             playCount: playCount,
                                             timePlayed: timePlayed
                                         )
-                                        .foregroundColor(adjustedArtworkColor)
                                     }
-                                    .padding(.top, 22)
-                                    .padding(.bottom, 20)
-                                    .padding(.horizontal, 20)
-                                    .glassEffect(in: RoundedRectangle(cornerRadius: 16))
                                 }
+                                .foregroundColor(adjustedArtworkColor)
                             }
                         }
-                        .padding(.horizontal, 22)
+                        .padding(.horizontal)
 
                         ViewSpacer()
                     }
-                    .padding(.top, 24)
+                    .padding(.top, 20)
                     .background(Color.resonateWhite)
                     .frame(maxHeight: .infinity)
-                    .cornerRadius(28)
+                    .cornerRadius(20)
                 }
             }
             .sheet(isPresented: $isMenuVisible) {

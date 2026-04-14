@@ -127,6 +127,7 @@ struct NowPlayingFullView: View {
     
     @State private var refreshTask: Task<Void, Never>? = nil
     
+    @State private var isInitialLoad: Bool = true
     @State private var isPlaying: Bool = false
 
     // Added views handler
@@ -198,8 +199,35 @@ struct NowPlayingFullView: View {
     var body: some View {
         ZStack {
             // Background derived from artwork
-//            artworkColor
-//                .ignoresSafeArea()
+            artworkColor
+                .ignoresSafeArea()
+            
+            // 1. Full bleed artwork at the back
+            if let artwork = currentSong?.artwork {
+                GeometryReader { proxy in
+                    let w = proxy.size.width
+                    ArtworkImage(artwork, width: w)
+                        .scaledToFill()
+                        .frame(width: w,
+                               height: w * 1.1)
+                        .clipped()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                        .overlay(
+                            LinearGradient(
+                                stops: [
+                                    .init(color: artworkColor, location: 0.04), // 0% — fully opaque
+                                    .init(color: .clear, location: 0.14),      // 25% – transparent
+                                    .init(color: .clear, location: 0.42),      // 75% – transparent
+                                    .init(color: artworkColor, location: 0.52)  // 100% — fully opaque
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                        .ignoresSafeArea()
+                }
+                .padding(.top, 60)
+            }
             
 //            Color.resonateWhite
 //                .ignoresSafeArea()
@@ -216,21 +244,23 @@ struct NowPlayingFullView: View {
 //            )
 //            .ignoresSafeArea()
 
-            MeshGradient(
-                width: 3,
-                height: 3,
-                points: [
-                    [0, 0], [0.5, 0], [1, 0],
-                    [0, 0.5], [0.5, 0.5], [1, 0.5],
-                    [0, 1], [0.5, 1], [1, 1]
-                ],
-                colors: [
-                    artworkColor, highlightColor, artworkColor,
-                    secondaryColor, artworkColor, highlightColor,
-                    artworkColor, secondaryColor, artworkColor
-                ]
-            )
-            .ignoresSafeArea()
+//            // Best gradient
+//            MeshGradient(
+//                width: 3,
+//                height: 3,
+//                points: [
+//                    [0, 0], [0.5, 0], [1, 0],
+//                    [0, 0.5], [0.5, 0.5], [1, 0.5],
+//                    [0, 1], [0.5, 1], [1, 1]
+//                ],
+//                colors: [
+//                    artworkColor, highlightColor, artworkColor,
+//                    secondaryColor, artworkColor, highlightColor,
+//                    artworkColor, secondaryColor, artworkColor
+//                ]
+//            )
+//            .ignoresSafeArea()
+            
             
             if let song = currentSong {
                 VStack (spacing: 8) {
@@ -243,15 +273,15 @@ struct NowPlayingFullView: View {
 //                                .background(primaryColor.opacity(0.16))
 //                                .clipShape(Circle())
                         }
-                        
+
                         Spacer()
-                        
+
                         Text("Now playing")
                             .font(Font.montserrat(size: 16, weight: .bold))
                             .foregroundColor(primaryColor)
-                        
+
                         Spacer()
-                        
+
                         Button(action: toggleMenuSheet) {
                             Image(systemName: "ellipsis")
                                 .font(Font.montserrat(size: 20, weight: .bold))
@@ -270,6 +300,8 @@ struct NowPlayingFullView: View {
 //                        .padding(.top, 12)
 //                        .padding(.bottom, 4)
 
+                    Spacer() // ← push controls to bottom half
+                    
                     MediaPlayerView(
                         song: song,
                         isPlaying: isPlaying,
@@ -281,8 +313,7 @@ struct NowPlayingFullView: View {
                         primaryColor: primaryColor,
                         toggleMenu: toggleMenuSheet
                     )
-                    
-                    Spacer()
+                    .padding(.bottom)
 
                     BottomBar(
                         isStatsVisible: isStatsVisible,
@@ -295,6 +326,7 @@ struct NowPlayingFullView: View {
                         toggleQueue: toggleQueue,
                         toggleLyrics: toggleLyrics
                     )
+                    .ignoresSafeArea(edges: .bottom)
                     .padding(.horizontal, 8)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity) // makes it full width
@@ -302,8 +334,14 @@ struct NowPlayingFullView: View {
                 .padding(.bottom, 48)
                 .padding(.horizontal, 20)
             } else {
-                Text("Nothing playing")
-                    .foregroundStyle(Color.white)
+                if isInitialLoad {
+                    // Show a placeholder/skeleton instead of "Nothing playing"
+                    ProgressView()
+                        .tint(.white)
+                } else {
+                    Text("Nothing playing")
+                        .foregroundStyle(Color.white)
+                }
             }
 
             VStack {
@@ -321,6 +359,7 @@ struct NowPlayingFullView: View {
                 while !Task.isCancelled {
                     await fetchCurrentlyPlayingWithLibraryData()
                     await getSongFromRealtimeDatabase()
+                    isInitialLoad = false  // after first fetch completes
 
                     // Update Now Playing Info only when song changes
                     if currentSong?.id != lastSongID {
@@ -607,7 +646,8 @@ func playItem<Item: PlayableMusicItem>(
     let player = SystemMusicPlayer.shared
 
     do {
-        if clearExistingItems {
+        // Check for empty queue
+        if clearExistingItems || player.queue.currentEntry?.item == nil {
             // Replace the entire queue with this item
             let newQueue = SystemMusicPlayer.Queue(for: [item])
             player.queue = newQueue
@@ -622,7 +662,6 @@ func playItem<Item: PlayableMusicItem>(
             if playImmediately {
                 // Switch to next song
                 try await player.skipToNextEntry()
-                
                 try await player.play()
             }
         }
@@ -630,3 +669,4 @@ func playItem<Item: PlayableMusicItem>(
         errorHandler?(error)
     }
 }
+

@@ -85,6 +85,8 @@ struct NowPlayingView: View {
         return min(max(playbackTime, 0), safeDuration)
     }
     
+    let progressBarHeight: CGFloat = 6
+    
     var body: some View {
         ZStack(alignment: .bottomLeading) {
             // Main content on top
@@ -136,7 +138,8 @@ struct NowPlayingView: View {
                     }
                 }
             }
-            .padding(.vertical, 8)
+            .padding(.top, 8)
+            .padding(.bottom, 6 + progressBarHeight)
             .padding(.horizontal, 12)
             .background(
 //                LinearGradient(
@@ -187,11 +190,11 @@ struct NowPlayingView: View {
                             endPoint: .trailing
                         )
                     )
-                    .frame(width: width * progress, height: 3)
+                    .frame(width: width * progress, height: progressBarHeight)
                     .opacity(progress > 0.02 ? 1 : 0)
                     .animation(.linear(duration: 0.5), value: clampedPlayback)
             }
-            .frame(height: 3)   // 👈 constrains GeometryReader
+            .frame(height: progressBarHeight)   // 👈 constrains GeometryReader
         }
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .onAppear {

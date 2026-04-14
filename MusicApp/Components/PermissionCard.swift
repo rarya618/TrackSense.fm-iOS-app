@@ -37,7 +37,7 @@ struct PermissionCard: View {
                     
                     if !isAuthorised {
                         Text(description)
-                            .font(.montserrat(size: 17))
+                            .font(.montserrat(size: 16))
                             .lineSpacing(9)
                             .foregroundColor(.primary)
                             .fixedSize(horizontal: false, vertical: true)
@@ -54,8 +54,8 @@ struct PermissionCard: View {
                 }
             }
         }
-        .padding(.horizontal, 24)
-        .padding(.vertical, isAuthorised ? 20 : 24)
+        .padding(.horizontal)
+        .padding(.vertical, isAuthorised ? 18 : 22)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 12)

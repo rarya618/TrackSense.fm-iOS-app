@@ -23,10 +23,10 @@ struct ArtistRow: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 12) {
-                ArtistArtworkView(artist: artist, width: 50, height: 50, cornerRadius: 8)
+                ArtistArtworkView(artist: artist, width: 50, height: 50, cornerRadius: 50)
                 VStack(alignment: .leading) {
                     Text(artist.name)
-                        .font(.system(size: 16))
+                        .font(.montserrat(size: 16))
                         .fontWeight(.bold)
                         .foregroundColor(.customPurple)
                         .lineLimit(1)

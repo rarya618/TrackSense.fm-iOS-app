@@ -58,8 +58,8 @@ struct AuthView: View {
                         }())
                         .foregroundColor(.primary)
                     }
-                    .font(.montserrat(size: 17))
-                    .lineSpacing(8)
+                    .font(.montserrat(size: 16))
+                    .lineSpacing(7)
                     .foregroundColor(.primary)
                     
                     // Permission cards
@@ -97,8 +97,8 @@ struct AuthView: View {
                         
                         Text("If you're not down for these, no hard feelings! But I won't be able to show you your insights without them.")
                     }
-                    .font(.montserrat(size: 17))
-                    .lineSpacing(8)
+                    .font(.montserrat(size: 16))
+                    .lineSpacing(7)
                     .foregroundColor(.primary)
                     
                     Group {
@@ -107,8 +107,8 @@ struct AuthView: View {
                         
                         Text("– Russ")
                     }
-                    .font(.montserrat(size: 17))
-                    .lineSpacing(8)
+                    .font(.montserrat(size: 16))
+                    .lineSpacing(7)
                     .foregroundColor(.primary)
                 }
                 .padding(.horizontal)

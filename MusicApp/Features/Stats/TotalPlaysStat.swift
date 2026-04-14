@@ -8,66 +8,75 @@
 import SwiftUI
 
 struct TotalPlaysStat: View {
-    var totalPlays: Int
+    var totalPlays: Int? // nil = loading, 0 = genuinely zero
     let toggleTotalPlaysSheet: () -> Void
-
+    
     var body: some View {
         HStack {
-            if (totalPlays == 0) {
-                // Loading state
-                VStack {
-                    ClassicLoadingView(text: "Loading total plays")
-                }
-            } else {
-                VStack (alignment: .leading, spacing: 16) {
-                    HStack (alignment: .top) {
-                        VStack (alignment: .leading, spacing: 2) {
-                            Text(totalPlays.formatted())
-                            .font(.montserrat(size: 32, weight: .bold))
-                            .foregroundStyle(Color.customPurple)
-
-                            Text("times played")
+            if let totalPlays {
+                if totalPlays == 0 {
+                    // Genuine empty state
+                    VStack {
+                        Text("No music played yet")
                             .font(.montserrat(size: 16, weight: .bold))
                             .foregroundStyle(Color.customLightPurple)
-                        }
-
-                        Spacer()
-
-                        Button(action: {
-                            toggleTotalPlaysSheet()
-                        }) {
-                            HStack {
-                                Image(systemName: "chart.xyaxis.line")
-                                    .font(.montserrat(size: 18))
-                            }
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 10)
-                            .foregroundColor(.resonatePurple)
-                            .background(
-                                Capsule()
-                                    .fill(Color.resonatePurple.opacity(0.12))
-                            )
-                        }
                     }
-                    .frame(maxWidth: .infinity)
+                } else {
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack(alignment: .top) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(totalPlays.formatted())
+                                .font(.montserrat(size: 32, weight: .bold))
+                                .foregroundStyle(Color.customPurple)
 
-                    Text({
-                        let s = AttributedString("According to your Apple Music data ")
-                        return s
-                    }())
-                    .font(.montserrat(size: 12, weight: .regular))
-                    .foregroundStyle(Color.customLightPurple)
+                                Text("times played")
+                                .font(.montserrat(size: 16, weight: .bold))
+                                .foregroundStyle(Color.customLightPurple)
+                            }
+
+                            Spacer()
+
+                            Button(action: {
+                                toggleTotalPlaysSheet()
+                            }) {
+                                HStack {
+                                    Image(systemName: "chart.xyaxis.line")
+                                        .font(.montserrat(size: 18))
+                                }
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 10)
+                                .foregroundColor(.resonatePurple)
+                                .background(
+                                    Capsule()
+                                        .fill(Color.resonatePurple.opacity(0.12))
+                                )
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+
+                        Text({
+                            let s = AttributedString("According to your Apple Music data ")
+                            return s
+                        }())
+                        .font(.montserrat(size: 12, weight: .regular))
+                        .foregroundStyle(Color.customLightPurple)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 20)
+                    .padding(.bottom, 24)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.resonatePurple.opacity(0.3), lineWidth: 1)
+                    )
+                }
+            } else {
+                // Loading state
+                VStack {
+                    ClassicLoadingView(text: "Loading play stats")
                 }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 24)
-        .padding(.top, 20)
-        .padding(.bottom, 24)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.resonatePurple.opacity(0.3), lineWidth: 1)
-        )
     }
 }
