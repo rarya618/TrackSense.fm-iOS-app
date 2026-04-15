@@ -51,13 +51,14 @@ struct BottomButton: View {
 
 struct BottomBar: View {
     var isStatsVisible: Bool
+    var isSessionActive: Bool
     var artworkColor: Color
     var primaryColor: Color
     var currentOutputIcon: String
     var currentOutputName: String
     let toggleStatsVisible: () -> Void
     let togglePlaylistsSheetVisible: () -> Void
-    let toggleQueue: () -> Void
+    let toggleSession: () -> Void
     let toggleLyrics: () -> Void
 
     var body: some View {
@@ -104,11 +105,11 @@ struct BottomBar: View {
             Spacer()
 
             BottomButton(
-                artworkColor: artworkColor,
-                icon: "music.note.list",
-                label: "Queue",
+                artworkColor: isSessionActive ? .red : artworkColor,
+                icon: "waveform",
+                label: "Session",
                 action: {
-                    toggleQueue()
+                    toggleSession()
                 }
             )
         }

@@ -120,6 +120,7 @@ struct NowPlayingFullView: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject var overlayManager: OverlayManager
     @EnvironmentObject var authManager: AuthManager
+    @EnvironmentObject var sessionManager: SessionManager
     
     @State private var lastErrorMessage: String? = nil
     
@@ -134,7 +135,7 @@ struct NowPlayingFullView: View {
     // Added views handler
     @State private var isStatsVisible: Bool = false
     @State private var isPlaylistsSheetVisible: Bool = false
-    @State private var isQueueVisible: Bool = false
+    @State private var isSessionVisible: Bool = false
     @State private var isLyricsVisible: Bool = false
     @State private var isMenuVisible: Bool = false
     @State private var isPlayerMinimised: Bool = false
@@ -162,8 +163,8 @@ struct NowPlayingFullView: View {
         isPlaylistsSheetVisible.toggle()
     }
     
-    func toggleQueue() {
-        isQueueVisible.toggle()
+    func toggleSession() {
+        isSessionVisible.toggle()
     }
     
     func toggleLyrics() {
@@ -336,13 +337,14 @@ struct NowPlayingFullView: View {
 
                     BottomBar(
                         isStatsVisible: isStatsVisible,
+                        isSessionActive: sessionManager.isSessionActive,
                         artworkColor: artworkColor,
                         primaryColor: primaryColor,
                         currentOutputIcon: currentOutputIcon,
                         currentOutputName: currentOutputName,
                         toggleStatsVisible: toggleStatsVisible,
                         togglePlaylistsSheetVisible: togglePlaylistsSheetVisible,
-                        toggleQueue: toggleQueue,
+                        toggleSession: toggleSession,
                         toggleLyrics: toggleLyrics
                     )
                     .ignoresSafeArea(edges: .bottom)
@@ -435,14 +437,15 @@ struct NowPlayingFullView: View {
             .presentationContentInteraction(.automatic)
             .presentationCompactAdaptation(.sheet)
         }
-        .sheet(isPresented: $isQueueVisible) {
+        .sheet(isPresented: $isSessionVisible) {
             NavigationStack {
-                QueueView(
+                SessionsView(
                     color: betterTextColor,
                     bgColor: .resonateWhite
                 )
             }
-            .presentationDetents([.medium, .large]) // allows swipe-up expansion
+            .environmentObject(sessionManager)
+            .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
             .presentationContentInteraction(.automatic)
             .presentationCompactAdaptation(.sheet)

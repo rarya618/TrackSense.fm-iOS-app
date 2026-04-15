@@ -17,5 +17,40 @@ The app leverages Apple's MusicKit framework to access library data and Firebase
 - **Cloud Sync:** Uses anonymous authentication to sync user statistics across devices without requiring a traditional account.
 - **Enhanced Playback:** Includes a custom "Now Playing" experience with integrated stats and queue management
 
+## Directory Structure
+
+```
+MusicApp/
+├── App/                        App entry point and root views
+│   ├── ResonateApp.swift
+│   ├── AppRootView.swift
+│   └── LoadingView.swift
+├── Views/                      Top-level navigation destinations
+│   ├── HomeView.swift
+│   ├── LibraryView.swift
+│   ├── StatsView.swift
+│   ├── SettingsView.swift
+│   └── AuthView.swift
+├── Features/                   Self-contained feature modules
+│   ├── Album/
+│   ├── Artist/
+│   ├── NowPlaying/
+│   ├── Playlists/
+│   ├── Sessions/
+│   ├── Song/
+│   └── Stats/
+├── Components/                 Reusable UI components
+│   ├── Charts/                 History and playcount chart views
+│   ├── Controls/               Menus, pickers, and search inputs
+│   ├── Layout/                 Layout utilities and general UI primitives
+│   ├── MusicItem/              Artwork, item blocks, and detail views
+│   └── Playback/               AirPlay picker and output button
+└── Managers/                   App-wide state and service managers
+    ├── AuthManager.swift
+    ├── OverlayManager.swift
+    ├── SessionManager.swift
+    └── SongLibraryManager.swift
+```
+
 ## License
 This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for more details.

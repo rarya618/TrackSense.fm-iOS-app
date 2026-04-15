@@ -450,14 +450,3 @@ struct HomeView: View {
     }
 }
 
-struct ViewSpacer: View {
-    var body: some View {
-        Spacer(minLength: 160)
-    }
-}
-
-struct TopSpacer: View {
-    var body: some View {
-        Spacer(minLength: 60)
-    }
-}

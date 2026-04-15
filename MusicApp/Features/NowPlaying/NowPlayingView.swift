@@ -10,7 +10,9 @@ import MusicKit
 
 struct NowPlayingView: View {
     let isPlayerExpanded: Bool
-    
+
+    @EnvironmentObject var sessionManager: SessionManager
+
     @State private var currentSong: Song?
     @State private var refreshTask: Task<Void, Never>? = nil
     
@@ -220,6 +222,15 @@ struct NowPlayingView: View {
         }
         .contentShape(Capsule())
         .clipShape(Capsule())
+        .overlay(alignment: .topTrailing) {
+            if sessionManager.isSessionActive {
+                Circle()
+                    .fill(.red)
+                    .frame(width: 9, height: 9)
+                    .padding(.top, 6)
+                    .padding(.trailing, 10)
+            }
+        }
         .onAppear {
             refreshTask?.cancel()
             refreshTask = Task {

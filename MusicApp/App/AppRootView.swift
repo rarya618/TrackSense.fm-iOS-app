@@ -82,6 +82,7 @@ struct AppRootView: View {
     @State private var currentPageId = "stats"
 
     @StateObject private var songLibraryManager = SongLibraryManager()
+    @StateObject private var sessionManager = SessionManager()
 
     func expandPlayer() -> Void {
         isPlayerExpanded = true
@@ -135,6 +136,8 @@ struct AppRootView: View {
                     switch currentPageId {
                     case "library":
                         LibraryView(userToken: token)
+                    case "sessions":
+                        SessionsView()
                     default:
                         StatsView(userToken: token)
                     }
@@ -173,6 +176,7 @@ struct AppRootView: View {
             .ignoresSafeArea(edges: .bottom)
         }
         .environmentObject(songLibraryManager)
+        .environmentObject(sessionManager)
         .fullScreenCover(isPresented: $isPlayerExpanded) {
             NowPlayingFullView(
                 isPlayerExpanded: $isPlayerExpanded,
@@ -180,6 +184,7 @@ struct AppRootView: View {
                 goToArtist: goToArtist
             )
             .environmentObject(overlayManager)
+            .environmentObject(sessionManager)
             .presentationBackground(.clear)
         }
         .ignoresSafeArea(edges: .bottom)
@@ -334,13 +339,13 @@ struct BottomNav: View {
                         setCurrentPageId: setCurrentPageId
                     )
 
-//                    BottomNavButton(
-//                        id: "sessions",
-//                        currentPageId: currentPageId,
-//                        icon: "calendar.badge.clock",
-//                        label: "Sessions",
-//                        setCurrentPageId: setCurrentPageId
-//                    )
+                    BottomNavButton(
+                        id: "sessions",
+                        currentPageId: currentPageId,
+                        icon: "waveform",
+                        label: "Sessions",
+                        setCurrentPageId: setCurrentPageId
+                    )
                 }
                 .padding(4)
                 .glassEffect(.regular, in: Capsule())
