@@ -244,7 +244,7 @@ struct AuthView: View {
 
 
     func fetchDeveloperToken() async throws -> String {
-        let url = URL(string: "https://getmusictoken-6jveqlm3va-uc.a.run.app")!
+        let url = URL(string: "YOUR_MUSICKIT_TOKEN_ENDPOINT")!
         let (data, _) = try await URLSession.shared.data(from: url)
         let response = try JSONDecoder().decode([String: String].self, from: data)
         guard let token = response["token"] else {

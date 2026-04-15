@@ -1,21 +1,47 @@
 # TrackSense
-An open source Apple Music Companion app designed to provide users with deep insights into their music listening habits.
-The app leverages Apple's MusicKit framework to access library data and Firebase to persist analytics and trends in a cloud-synced environment.
+
+A music analytics companion app for Apple Music. TrackSense connects to your library to surface deep insights into your listening habits — top songs, albums, and artists, historical trends, milestones, and more — synced to a personal cloud backend so your stats persist over time.
+
+---
 
 ## Features
-*   **Comprehensive Music Stats:** Get deep insights into your listening habits. View your top songs, albums, and artists, sortable by either play count or total listening time.
-*   **Historical Trends:** Visualize your listening history with detailed charts. See how plays for your favorite items and overall library stats evolve over time. Includes trend analysis for daily growth, weekly momentum, and listening streaks.
-*   **Cloud Sync:** Anonymously syncs your listening data to a personal Firebase backend to track long-term trends, play history, and milestones.
-*   **Dynamic "Now Playing" UI:** A beautiful, expandable player that adapts its color scheme to the current song's artwork. Features full playback controls, repeat/shuffle modes, progress scrubbing, and AirPlay integration.
-*   **Full Library Browsing:** Explore your entire Apple Music library including songs, albums, artists, and playlists through a clean and intuitive interface.
-*   **Playlist Management:** Seamlessly add tracks to your existing playlists or create new ones from within the app.
-*   **Detailed Views:** Dive deep into individual song, album, and artist pages, complete with tracklists, stats, and metadata.
 
-## Core Functionality
-- **Music Insights:** Visualizes listening statistics such as total play hours, top artists, and weekly trends.
-- **Library Management:** Provides an enhanced interface for browsing songs, albums, and playlists.
-- **Cloud Sync:** Uses anonymous authentication to sync user statistics across devices without requiring a traditional account.
-- **Enhanced Playback:** Includes a custom "Now Playing" experience with integrated stats and queue management
+- **Stats Dashboard** — View your top songs, albums, and artists sortable by play count or total listening time. Track library-wide metrics like total play hours and play counts with full history.
+- **Historical Trends** — Visualize how your listening habits evolve over time with daily and weekly charts. Includes trend analysis for growth, momentum, and streaks.
+- **Milestones** — Track how many songs, albums, and artists you've hit at 10, 25, 50, 100, 250, 500, and 1000+ plays.
+- **Now Playing** — An immersive full-screen player with dynamic colors from album artwork, playback controls, progress scrubbing, AirPlay integration, and per-song stats.
+- **Sessions** — Build and manage custom playback queues with drag-and-drop reordering.
+- **Full Library Browsing** — Browse your entire Apple Music library across songs, albums, artists, and playlists.
+- **Playlist Management** — Add tracks to existing playlists or create new ones from within the app.
+- **Cloud Sync** — Anonymously syncs your stats to a personal Firebase backend. Supports manual sync and optional auto-sync on launch.
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| UI | SwiftUI |
+| Music | MusicKit, MediaPlayer |
+| Backend | Firebase Realtime Database, Firebase Auth (anonymous) |
+| Audio | AVFoundation |
+| Reactive | Combine |
+| Font | Montserrat |
+
+---
+
+## Architecture
+
+The app uses an MVVM-adjacent pattern with environment-injected managers handling shared state:
+
+- **`AuthManager`** — Anonymous Firebase sign-in, maintains user UID across sessions.
+- **`SongLibraryManager`** — Fetches and caches the user's Apple Music library.
+- **`SessionManager`** — Manages queue-based playback sessions with drag-and-drop support.
+- **`OverlayManager`** — Global overlay state for messages and errors.
+
+Sync is unidirectional: local library data is aggregated and pushed to Firebase. Daily history snapshots are stored as `YYYY-MM-DD` keys, enabling chart rendering for any metric over time.
+
+---
 
 ## Directory Structure
 
@@ -40,17 +66,52 @@ MusicApp/
 │   ├── Song/
 │   └── Stats/
 ├── Components/                 Reusable UI components
-│   ├── Charts/                 History and playcount chart views
+│   ├── Charts/                 History and play count chart views
 │   ├── Controls/               Menus, pickers, and search inputs
 │   ├── Layout/                 Layout utilities and general UI primitives
 │   ├── MusicItem/              Artwork, item blocks, and detail views
 │   └── Playback/               AirPlay picker and output button
 └── Managers/                   App-wide state and service managers
-    ├── AuthManager.swift
-    ├── OverlayManager.swift
-    ├── SessionManager.swift
-    └── SongLibraryManager.swift
 ```
 
+---
+
+## Setup
+
+### Requirements
+
+- Xcode 15+
+- iOS 16+
+- An Apple Music subscription (required for MusicKit library access)
+- A Firebase project with Realtime Database enabled
+
+### Firebase
+
+1. Create a Firebase project and enable **Anonymous Authentication** and **Realtime Database**.
+2. Download `GoogleService-Info.plist` and place it in `MusicApp/`.
+3. The database uses the following structure:
+
+```
+users/
+  {userID}/
+    songs/{songId}/
+    albums/{albumId}/
+    artists/{artistId}/
+    libraryPlayedHours/
+    totalPlays/
+```
+
+### MusicKit
+
+The app fetches a MusicKit developer token from a remote Cloud Function endpoint. To use your own:
+
+1. Deploy a Cloud Function (or any server) that returns a signed MusicKit developer token as `{ "token": "..." }`.
+2. Replace `YOUR_MUSICKIT_TOKEN_ENDPOINT` in `AuthView.swift` with your endpoint URL.
+
+Refer to [Apple's MusicKit documentation](https://developer.apple.com/documentation/musickit) for instructions on generating developer tokens.
+
+---
+
 ## License
+
 This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for more details.
