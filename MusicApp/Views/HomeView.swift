@@ -1,6 +1,6 @@
 //
 //  HomeView.swift
-//  Resonate
+//  TrackSense.fm
 //
 //  Created by Russal Arya on 20/9/2025.
 //
@@ -15,6 +15,7 @@ struct PageHeader: View {
         HStack() {
             Text(text)
                 .font(.montserrat(size: 32, weight: .bold))
+                .tracking(32 * -0.025)
                 .padding(.top, 8)
             
             Spacer()
@@ -106,7 +107,8 @@ struct DisplaySongsInGrid: View {
                                 artistName: song.artistName,
                                 playCount: song.playCount,
                                 removeSpacer: false,
-                                removeEllipsis: false
+                                // have to disable for now as no menu designed yet
+                                removeEllipsis: true
                             ) {
                                 setSelectedSong(song)
                             }

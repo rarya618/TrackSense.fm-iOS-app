@@ -110,15 +110,18 @@ struct DetailsView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(title)
                                 .font(.montserrat(size: 20, weight: .bold))
+                                .tracking(20 * -0.025)
                                 .fixedSize(horizontal: false, vertical: true)
                             
                             Text(artistName)
                                 .font(.montserrat(size: 16, weight: .medium))
+                                .tracking(16 * -0.025)
                         }
                     
                         if let album = albumTitle {
                             Text(album)
                                 .font(.montserrat(size: 14))
+                                .tracking(14 * -0.025)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
                         

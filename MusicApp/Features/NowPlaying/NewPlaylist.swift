@@ -59,8 +59,16 @@ struct NewPlaylist: View {
             }
             .padding(.horizontal, 24)
         }
-        .navigationTitle("New Playlist")
+//        .navigationTitle("New Playlist")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("New Playlist")
+                    .font(.montserrat(size: 17, weight: .bold))
+                    .tracking(17 * -0.025)
+                    
+            }
+        }
     }
 
     func createPlaylist() {

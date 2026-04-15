@@ -10,40 +10,71 @@ import MusicKit
 
 struct TopSongsView: View {
     let songs: [Song]
-    
+    @State private var isShowingPlays: Bool
+
     @State private var isLoading = true
     @State private var loadedSongs: [Song] = []
-    
     @State private var selectedSong: Song?
-    
+
+    init(songs: [Song], isShowingPlays: Bool) {
+        self.songs = songs
+        self._isShowingPlays = State(initialValue: isShowingPlays)
+    }
+
     func setSelectedSong(song: Song) {
         selectedSong = song
     }
-    
+
     var body: some View {
         VStack {
             if isLoading {
-                VStack {
-                    ClassicLoadingView(text: "Loading songs")
-                }
+                ClassicLoadingView(text: "Loading songs")
             } else {
                 ScrollView {
                     DisplayTopSongs(
                         songs: Array(loadedSongs),
-                        setSelectedSong: setSelectedSong
+                        setSelectedSong: setSelectedSong,
+                        isShowingPlays: isShowingPlays
                     )
                     .padding()
-                    
+
                     ViewSpacer()
                 }
-                .navigationTitle("Top songs")
-                .navigationDestination(item: $selectedSong) { song in
-                    SongView(song: song)
+                .navigationBarTitleDisplayMode(.inline)
+                .navigationDestination(item: $selectedSong) { SongView(song: $0) }
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        Text("Top songs")
+                            .font(.montserrat(size: 17, weight: .bold))
+                            .tracking(17 * -0.025)
+                            
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Menu {
+                            generateMenu(getSortingMenu(
+                                isShowingPlays: isShowingPlays,
+                                setShowingPlays: { isShowingPlays = $0 }
+                            ))
+                        } label: {
+                            Image(systemName: "arrow.up.arrow.down")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(.resonatePurple)
+                        }
+                    }
                 }
             }
         }
-        .onAppear {
-            loadSongs()
+        .onAppear { loadSongs() }
+        .onChange(of: isShowingPlays) {
+            loadedSongs = loadedSongs.sorted {
+                if isShowingPlays {
+                    return ($0.playCount ?? 0) > ($1.playCount ?? 0)
+                } else {
+                    let l = ($0.playCount ?? 0) * Int($0.duration ?? 0)
+                    let r = ($1.playCount ?? 0) * Int($1.duration ?? 0)
+                    return l > r
+                }
+            }
         }
     }
     

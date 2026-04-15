@@ -193,7 +193,8 @@ struct MediaPlayerView: View {
                                 MarqueeText(
                                     text: song.title,
                                     font: .montserrat(size: 20, weight: .bold),
-                                    color: primaryColor
+                                    color: primaryColor,
+                                    tracking: 20 * -0.025
                                 )
                                 .frame(height: 28)
                                 .clipped()
@@ -201,7 +202,8 @@ struct MediaPlayerView: View {
                                 MarqueeText(
                                     text: song.artistName,
                                     font: .montserrat(size: 16, weight: .medium),
-                                    color: primaryColor.opacity(0.8)
+                                    color: primaryColor.opacity(0.8),
+                                    tracking: 16 * -0.025
                                 )
                                 .frame(height: 22)
                                 .clipped()

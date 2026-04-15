@@ -47,24 +47,40 @@ func generateMenu(_ menuItems: [[MenuItem]]) -> some View {
 
 struct MenuRow: View {
     let menuItem: MenuItem
+    var color: Color = .resonatePurple
+
+    private var accentColor: Color {
+        menuItem.role == .destructive ? .red : color
+    }
 
     var body: some View {
         Button(action: menuItem.action) {
-            HStack(spacing: 12) {
+            HStack(spacing: 8) {
                 if let icon = menuItem.icon {
                     Image(systemName: icon)
-                    .fontWeight(.medium)
-                    .font(Font.montserrat(size: 20))
-                    .frame(width: 32)
+                        .font(.montserrat(size: 16, weight: .bold))
+                        .foregroundColor(accentColor)
+                        .frame(width: 36, height: 36)
+//                        .background(accentColor.opacity(0.12))
+                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
-                
+
                 Text(menuItem.label)
+                    .font(.montserrat(size: 16, weight: .bold))
+                    .tracking(16 * -0.025)
+                    .foregroundStyle(menuItem.role == .destructive ? Color.red : accentColor)
+
                 Spacer()
+
+//                Image(systemName: "chevron.right")
+//                    .font(.system(size: 12, weight: .semibold))
+//                    .foregroundColor(Color.secondary.opacity(0.4))
             }
+            .padding(.leading, 10)
+            .padding(.trailing, 10)
+            .padding(.vertical, 8)
         }
-        .foregroundStyle(menuItem.role == .destructive ? Color.red : Color.customDark)
-        .font(.montserrat(size: 16, weight: .semibold))
-        .padding(.vertical, 10)
+        .buttonStyle(.plain)
     }
 }
 
@@ -277,78 +293,91 @@ struct CustomMenu: View {
     let color: Color
     let menuItems: [[MenuItem]]
     
+    @Environment(\.colorScheme) private var colorScheme
+    
     private var betterTextColor: Color {
-        let bgCG = Color.resonateWhite
+        // depend on colorScheme to force recalculation on toggle
+        _ = colorScheme
         
-        if let textCG = artwork?.backgroundColor {
-                let textColor = UIColor(cgColor: textCG)
-            let bgColor = UIColor(bgCG)
-                return idealColor(textColor: textColor, backgroundColor: bgColor)
+        // Safely unwrap MusicKit-provided CGColors and construct UIColors correctly.
+        // Fallback to .resonatePurple if anything is missing.
+        guard
+            let textCG = artwork?.primaryTextColor,
+            let bgCG = artwork?.backgroundColor
+        else {
+            return .resonatePurple
         }
-        return .resonatePurple
+
+        let textColor = UIColor(cgColor: textCG)
+        let bgColor = UIColor(cgColor: bgCG)
+        return idealColor(textColor: textColor, backgroundColor: bgColor)
     }
     
     var body: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 12) {
+        VStack(spacing: 0) {
+            // Horizontal header
+            HStack(spacing: 14) {
                 ArtworkView(
                     artwork: artwork,
-                    width: 48,
-                    height: 48,
-                    cornerRadius: 12
+                    width: 52,
+                    height: 52,
+                    cornerRadius: 10
                 )
-                
+                .shadow(color: .black.opacity(0.12), radius: 6, x: 0, y: 3)
+
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(.montserrat(size: 16, weight: .bold))
+                        .tracking(16 * -0.025)
+                        .foregroundStyle(betterTextColor)
                         .lineLimit(1)
-                    
-                    if let subtitle = subtitle {
+
+                    if let subtitle {
                         Text(subtitle)
-                            .font(.montserrat(size: 15))
+                            .font(.montserrat(size: 15, weight: .medium))
+                            .tracking(15 * -0.025)
+                            .foregroundStyle(betterTextColor.opacity(0.8))
                             .lineLimit(1)
                     }
                 }
-                .foregroundStyle(betterTextColor)
-                
+
                 Spacer(minLength: 0)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(betterTextColor.opacity(0.04))
-                    .stroke(betterTextColor.opacity(0.32), lineWidth: 1)
-            )
-//            .padding(.horizontal, 12)
-//            .padding(.vertical, 12)
-//            .glassEffect(.clear, in: RoundedRectangle(cornerRadius: 20))
-            
-            VStack(spacing: 6) {
-                ForEach(menuItems.indices, id: \.self) { sectionIndex in
-                    Divider()
-                    
-                    let section = menuItems[sectionIndex]
-                    VStack(spacing: 3) {
-                        ForEach(section.indices, id: \.self) { itemIndex in
-                            let menuItem = section[itemIndex]
-                            MenuRow(menuItem: menuItem)
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+            .padding(.bottom, 16)
+
+            Divider()
+
+            // Menu sections
+            ScrollView {
+                VStack(spacing: 10) {
+                    ForEach(menuItems.indices, id: \.self) { sectionIndex in
+                        let section = menuItems[sectionIndex]
+                        VStack(spacing: 0) {
+                            ForEach(section.indices, id: \.self) { itemIndex in
+                                MenuRow(
+                                    menuItem: section[itemIndex],
+                                    color: betterTextColor
+                                )
+                                if itemIndex < section.count - 1 {
+                                    Divider()
+                                        .padding(.leading, 56)
+                                }
+                            }
                         }
+                        .background(Color.resonatePurple.opacity(0.04))
+                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                .stroke(Color.resonatePurple.opacity(0.12), lineWidth: 1)
+                        )
                     }
                 }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 16)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(Color.resonatePurple.opacity(0.32), lineWidth: 1)
-            )
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 25)
-        
-        Spacer()
     }
 }
+

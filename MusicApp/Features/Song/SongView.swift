@@ -199,7 +199,7 @@ struct SongView: View {
                 )
             }
             .background(Color.resonateWhite)
-            .presentationDetents([.height(450)])
+            .presentationDetents([.medium, .large]) // allows swipe-up expansion
             .presentationDragIndicator(.visible)
         }
         .navigationDestination(item: $songAlbum) { album in

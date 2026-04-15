@@ -12,6 +12,8 @@ struct MarqueeText: View {
     let text: String
     let font: Font
     let color: Color
+    let tracking: Double
+    
     var speed: Double = 30 // points per second
     var delay: Double = 2.0
     
@@ -40,11 +42,13 @@ struct MarqueeText: View {
                 HStack(spacing: 40) {
                     Text(text)
                         .font(font)
+                        .tracking(tracking)
                         .foregroundColor(color)
                         .fixedSize()
                     if needsScrolling {
                         Text(text)
                             .font(font)
+                            .tracking(tracking)
                             .foregroundColor(color)
                             .fixedSize()
                     }
@@ -55,9 +59,14 @@ struct MarqueeText: View {
             .onAppear {
                 containerWidth = geo.size.width
             }
+            .onChange(of: text) {
+                isAnimating = false
+                textWidth = 0
+            }
             .background(
                 Text(text)
                     .font(font)
+                    .tracking(tracking)
                     .fixedSize()
                     .hidden()
                     .background(GeometryReader { textGeo in
@@ -71,6 +80,7 @@ struct MarqueeText: View {
                             }
                         }
                     })
+                    .id(text)
             )
         }
     }

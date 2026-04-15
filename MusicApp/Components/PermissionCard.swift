@@ -32,12 +32,14 @@ struct PermissionCard: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(title)
                         .font(.montserrat(size: 20, weight: .bold))
+                        .tracking(20 * -0.025)
                         .foregroundColor(accentColor)
                         .padding(.vertical, 2)
                     
                     if !isAuthorised {
                         Text(description)
                             .font(.montserrat(size: 16))
+                            .tracking(16 * -0.025)
                             .lineSpacing(9)
                             .foregroundColor(.primary)
                             .fixedSize(horizontal: false, vertical: true)

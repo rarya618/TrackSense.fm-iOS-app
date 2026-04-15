@@ -36,6 +36,7 @@ struct MusicItemButtons: View {
                 .frame(maxWidth: .infinity)
             }
             .font(.montserrat(size: 16, weight: .bold))
+            .tracking(16 * -0.025)
             .foregroundColor(artworkColor)
             .padding(.horizontal, 24)
             .padding(.vertical, 14)

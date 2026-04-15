@@ -22,6 +22,7 @@ struct CustomPicker: View {
                     
                     Text(label)
                         .font(.montserrat(size: 16, weight: currentSection == index ? .bold : .regular))
+                        .tracking(16 * -0.025)
                         .padding(.vertical, 8)
                         .padding(.horizontal, 16)
                         .lineLimit(1)

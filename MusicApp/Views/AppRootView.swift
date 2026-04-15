@@ -130,7 +130,6 @@ struct AppRootView: View {
     @ViewBuilder
     private func mainAppView(token: String) -> some View {
         ZStack(alignment: .bottom) {
-
             NavigationStack {
                 Group {
                     switch currentPageId {
@@ -152,10 +151,7 @@ struct AppRootView: View {
                         var lastSongID: MusicItemID? = nil
                         while !Task.isCancelled {
                             await fetchCurrentlyPlayingWithLibraryData()
-                            
                             try? await Task.sleep(nanoseconds: 1_000_000_000) // 1s
-                            
-                            // Update UI only if song actually changed
                             if currentSong?.id != lastSongID {
                                 lastSongID = currentSong?.id
                             }
@@ -183,10 +179,14 @@ struct AppRootView: View {
                 goToAlbum: goToAlbum,
                 goToArtist: goToArtist
             )
-                .environmentObject(overlayManager)
-                .presentationBackground(.clear)
+            .environmentObject(overlayManager)
+            .presentationBackground(.clear)
         }
         .ignoresSafeArea(edges: .bottom)
+    }
+
+    func setCurrentPageId(id: String) {
+        currentPageId = id
     }
     
     @MainActor
@@ -223,10 +223,6 @@ struct AppRootView: View {
         default:
             if currentSong != nil { currentSong = nil }
         }
-    }
-
-    func setCurrentPageId(id: String) {
-        currentPageId = id
     }
 
     private func bootstrapApp() async {
@@ -329,7 +325,7 @@ struct BottomNav: View {
                         label: "Stats",
                         setCurrentPageId: setCurrentPageId
                     )
-                    
+
                     BottomNavButton(
                         id: "library",
                         currentPageId: currentPageId,
@@ -337,7 +333,7 @@ struct BottomNav: View {
                         label: "Library",
                         setCurrentPageId: setCurrentPageId
                     )
-                    
+
 //                    BottomNavButton(
 //                        id: "sessions",
 //                        currentPageId: currentPageId,
@@ -347,12 +343,7 @@ struct BottomNav: View {
 //                    )
                 }
                 .padding(4)
-                .background(Color.resonateWhite)
-                .clipShape(RoundedRectangle(cornerRadius: 80))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 80)
-                        .stroke(Color.resonatePurple.opacity(0.3), lineWidth: 1)
-                )
+                .glassEffect(.regular, in: Capsule())
                 
 //                Spacer()
                 
@@ -388,7 +379,7 @@ struct BottomNavButton: View {
     let icon: String
     let label: String
     let setCurrentPageId: (String) -> Void
-    var horizontalPadding: CGFloat = 22
+    var horizontalPadding: CGFloat = 28
     var verticalPadding: CGFloat = 8
     var hideLabel = false
 
@@ -416,14 +407,10 @@ struct BottomNavButton: View {
             .padding(.vertical, verticalPadding + (hideLabel ? 4 : 0))
         }
         .foregroundStyle(
-            isActive ? Color.resonatePurple : Color.resonatePurple.opacity(0.6)
+            isActive ? Color.resonatePurple : Color.resonatePurple.opacity(0.5)
         )
-        .background(isActive ? Color.resonatePurple.opacity(0.2) : .clear)
+        .background(isActive ? Color.resonatePurple.opacity(0.15) : .clear)
         .contentShape(Capsule())
-        .cornerRadius(.infinity)
-        .overlay(
-            Capsule()
-                .stroke(Color.resonatePurple.opacity(isActive ? 0.3 : 0), lineWidth: 1)
-        )
+        .clipShape(Capsule())
     }
 }

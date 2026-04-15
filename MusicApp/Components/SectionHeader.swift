@@ -30,10 +30,12 @@ struct SectionHeader: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.montserrat(size: 20, weight: .bold))
+                    .tracking(20 * -0.025)
                     .foregroundStyle(.primary)
                 
                 Text(subtitle)
-                    .font(.montserrat(size: 15))
+                    .font(.montserrat(size: 16))
+                    .tracking(15 * -0.025)
                     .foregroundStyle(.secondary)
             }
             Spacer()

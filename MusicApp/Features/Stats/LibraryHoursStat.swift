@@ -31,6 +31,7 @@ struct LibraryHoursStat: View {
                             VStack (alignment: .leading, spacing: 2) {
                                 Text(hours.formatted())
                                     .font(.montserrat(size: 32, weight: .bold))
+                                    .tracking(32 * -0.025)
                                     .foregroundStyle(Color.customPurple)
                                 
                                 Text("hours of music played")

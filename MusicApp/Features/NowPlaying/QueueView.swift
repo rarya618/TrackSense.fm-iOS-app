@@ -51,7 +51,15 @@ struct QueueView: View {
         }
         .foregroundStyle(color)
         .background(bgColor)
-        .navigationTitle("Next in Queue")
+//        .navigationTitle("Next in Queue")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("Next in Queue")
+                    .font(.montserrat(size: 17, weight: .bold))
+                    .tracking(17 * -0.025)
+                    
+            }
+        }
     }
 }

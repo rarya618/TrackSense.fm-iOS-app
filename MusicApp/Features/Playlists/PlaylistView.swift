@@ -146,7 +146,7 @@ struct PlaylistView: View {
                     )
                 }
                     .background(Color.resonateWhite)
-                    .presentationDetents([.height(450)])
+                    .presentationDetents([.medium, .large]) // allows swipe-up expansion
                     .presentationDragIndicator(.visible)
             }
             .ignoresSafeArea(edges: .vertical) // extend under status bar

@@ -36,14 +36,16 @@ struct MusicItemBlock: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(title)
-                            .font(.montserrat(size: 17, weight: .semibold))
+                            .font(.montserrat(size: 17, weight: .bold))
+                            .tracking(17 * -0.025)
                             .foregroundColor(primaryColor)
                             .lineLimit(1)
                         
                         HStack(spacing: 6) {
                             if let artist = artistName {
                                 Text(artist)
-                                    .font(.montserrat(size: 14))
+                                    .font(.montserrat(size: 14, weight: .medium))
+                                    .tracking(14 * -0.025)
                                     .foregroundColor(secondaryColor)
                                     .lineLimit(1)
                             }
@@ -53,7 +55,8 @@ struct MusicItemBlock: View {
                                     .fill(Color.customLightPurple.opacity(0.4))
                                     .frame(width: 3, height: 3)
                                 Text(plays.formatted() + " play" + (plays == 1 ? "" : "s"))
-                                    .font(.montserrat(size: 14))
+                                    .font(.montserrat(size: 14, weight: .medium))
+                                    .tracking(14 * -0.025)
                                     .foregroundColor(secondaryColor)
                                     .lineLimit(1)
                             }

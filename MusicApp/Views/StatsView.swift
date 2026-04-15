@@ -104,17 +104,25 @@ func getSortingMenu(
 struct TopStatsToggleItem: View {
     let displayItem: AnyView
     let onSeeAll: () -> Void
-    
+
     var body: some View {
-        VStack(spacing: 18) {
+        VStack(spacing: 12) {
             displayItem
                 .padding(.horizontal)
-            
-            StandardButton(
-                label: "See all",
-                action: onSeeAll
-            )
-            .padding(.horizontal)
+
+            Button(action: onSeeAll) {
+                HStack(spacing: 4) {
+                    Text("See all")
+                        .font(.montserrat(size: 14, weight: .semibold))
+                        .tracking(14 * -0.025)
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                }
+                .foregroundColor(.resonatePurple)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
+            }
+            .buttonStyle(.plain)
         }
     }
 }
@@ -149,8 +157,10 @@ struct StatsView: View {
     
     @State private var isLibraryHoursGraphVisible = false
     @State private var isTotalPlaysSheetVisible = false
+    @State private var isSettingsVisible = false
     
     @AppStorage("lastStatsSync") var lastStatsSync: Date?
+    @AppStorage("autoSync") var autoSync: Bool = true
 
     @State private var cloudLibraryPlayedHoursData: StatFromCloud?
     @State private var cloudTotalPlayedData: StatFromCloud?
@@ -173,6 +183,15 @@ struct StatsView: View {
     
     func setShowingPlays(value: Bool) {
         isShowingPlays = value
+        Task {
+            await fetchTopSongs()
+            albumStats = albumStats.sorted {
+                value ? $0.totalPlayCount > $1.totalPlayCount : $0.timePlayed > $1.timePlayed
+            }
+            artistStats = artistStats.sorted {
+                value ? $0.totalPlayCount > $1.totalPlayCount : $0.timePlayed > $1.timePlayed
+            }
+        }
     }
     
     let margin: CGFloat = 20
@@ -180,8 +199,8 @@ struct StatsView: View {
     func setCurrentSection(_ index: Int) {
         currentSection = index
     }
-    
-    // To prevent cloud sync on every reboot
+
+    // MANUAL OVERRIDE: For testing purposes only
     @State private var inProductionMode = true
     
     var body: some View {
@@ -190,11 +209,17 @@ struct StatsView: View {
                 VStack(spacing: 16) {
                     HStack(alignment: .top) {
                         VStack(alignment: .leading, spacing: 4) {
-                            PageHeader(text: "Stats")
+                            HStack(alignment: .center, spacing: 10) {
+                                Button(action: { isSettingsVisible = true }) {
+                                    Image(systemName: "person.circle")
+                                        .font(.system(size: 28, weight: .medium))
+                                        .foregroundStyle(Color.resonatePurple)
+                                }
+                                .buttonStyle(.plain)
+                                .padding(.top, 8)
 
-                            Text("Last synced: \(lastStatsSync?.formatted(date: .abbreviated, time: .shortened) ?? "never")")
-                                .font(.montserrat(size: 14, weight: .medium))
-                                .foregroundStyle(Color.customLightPurple)
+                                PageHeader(text: "Stats")
+                            }
                         }
                         Spacer()
                         Button(action: {
@@ -215,6 +240,7 @@ struct StatsView: View {
                                         .font(.montserrat(size: 20))
                                     Text("Sync")
                                         .font(.montserrat(size: 16, weight: .bold))
+                                        .tracking(16 * -0.025)
                                 }
                             }
                             .padding(.horizontal, 16)
@@ -222,9 +248,10 @@ struct StatsView: View {
                             .foregroundColor(isSyncing ? .resonateLightPurple : .resonatePurple)
                             .overlay(
                                 Capsule()
-                                    .stroke(Color.resonatePurple.opacity(0.3), lineWidth: 1)
+                                    .fill(Color.resonatePurple.opacity(0.06))
+                                    .stroke(Color.resonatePurple.opacity(0.25), lineWidth: 1)
                             )
-                            .padding(.top)
+                            .padding(.top, 4)
                         }
                         .disabled(isSyncing)
                     }
@@ -271,7 +298,7 @@ struct StatsView: View {
                                     )
                                 )
                             } label: {
-                                Image(systemName: "eye")
+                                Image(systemName: "arrow.up.arrow.down")
                                     .fontWeight(.bold)
                                     .font(.montserrat(size: 16))
                                     .foregroundColor(.resonatePurple)
@@ -335,7 +362,7 @@ struct StatsView: View {
                             )
                             .tag(2)
                         }
-                        .frame(height: 450)
+                        .frame(height: 395)
                         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     }
                     
@@ -359,6 +386,12 @@ struct StatsView: View {
                 }
             }
         }
+        .sheet(isPresented: $isSettingsVisible) {
+            SettingsView()
+                .environmentObject(authManager)
+                .environmentObject(songLibraryManager)
+                .presentationDragIndicator(.visible)
+        }
         .sheet(isPresented: $isLibraryHoursGraphVisible) {
             LibraryHoursSheet(cloudData: cloudLibraryPlayedHoursData)
         }
@@ -371,12 +404,12 @@ struct StatsView: View {
         .navigationDestination(item: $buttonTapped) { section in
             switch section {
             case "songs":
-                TopSongsView(songs: Array(topSongs))
+                TopSongsView(songs: Array(topSongs), isShowingPlays: isShowingPlays)
             case "albums":
-                TopAlbumsView(albumStats: albumStats)
+                TopAlbumsView(albumStats: albumStats, isShowingPlays: isShowingPlays)
             default:
                 // BUG: have to fix selected artists being handled inside the view instead of being passed in as an argument
-                TopArtistsView(artistStats: artistStats, setSelectedArtist: setSelectedArtist)
+                TopArtistsView(artistStats: artistStats, setSelectedArtist: setSelectedArtist, isShowingPlays: isShowingPlays)
             }
         }
         .task {
@@ -384,7 +417,7 @@ struct StatsView: View {
             hasLoaded = true
             await refreshStats()
             
-            if inProductionMode {
+            if inProductionMode && autoSync {
                 await syncToCloud()
             }
         }

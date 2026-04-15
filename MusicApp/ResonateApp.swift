@@ -39,6 +39,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
   func application(_ application: UIApplication,
                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
     FirebaseApp.configure()
+
+    let darkThumb = UIColor(red: 0.12, green: 0.12, blue: 0.12, alpha: 1)
+    UISwitch.appearance(for: UITraitCollection(userInterfaceStyle: .dark)).thumbTintColor = darkThumb
+    UISwitch.appearance(for: UITraitCollection(userInterfaceStyle: .light)).thumbTintColor = .white
+
     return true
   }
   

@@ -72,6 +72,7 @@ struct ArtistDetailsView: View {
 
                     Text(name)
                         .font(.montserrat(size: 20, weight: .bold))
+                        .tracking(20 * -0.025)
                         .lineLimit(nil) // allow wrapping if needed
                         .foregroundStyle(primaryColor)
                         .multilineTextAlignment(.center)

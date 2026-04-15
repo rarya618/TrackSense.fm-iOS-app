@@ -17,6 +17,7 @@ struct StatContainerView: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(value)
                     .font(.montserrat(size: 22, weight: .bold))
+                    .tracking(22 * -0.025)
                     .foregroundStyle(.primary)
                 Text(title.lowercased())
                     .font(.montserrat(size: 14, weight: .medium))

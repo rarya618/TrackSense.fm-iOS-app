@@ -37,33 +37,61 @@ struct DisplayTopArtists: View {
 }
 
 struct TopArtistsView: View {
-    @State private var isLoading = true
-    @State private var loadedArtistStats: [ArtistStat] = []
-    
     let artistStats: [ArtistStat]
     let setSelectedArtist: (Artist) -> Void
-    
+    @State private var isShowingPlays: Bool
+
+    @State private var isLoading = true
+    @State private var loadedArtistStats: [ArtistStat] = []
+
+    init(artistStats: [ArtistStat], setSelectedArtist: @escaping (Artist) -> Void, isShowingPlays: Bool) {
+        self.artistStats = artistStats
+        self.setSelectedArtist = setSelectedArtist
+        self._isShowingPlays = State(initialValue: isShowingPlays)
+    }
+
     var body: some View {
         Group {
             if isLoading {
-                VStack {
-                    ClassicLoadingView(text: "Loading artists")
-                }
+                ClassicLoadingView(text: "Loading artists")
             } else {
                 ScrollView {
                     DisplayTopArtists(
-                        artistStats: Array(artistStats),
-                        setSelectedArtist: setSelectedArtist
+                        artistStats: Array(loadedArtistStats),
+                        setSelectedArtist: setSelectedArtist,
+                        isShowingPlays: isShowingPlays
                     )
                     .padding()
-                    
+
                     ViewSpacer()
                 }
-                .navigationTitle("Top artists")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        Text("Top artists")
+                            .font(.montserrat(size: 17, weight: .bold))
+                            .tracking(17 * -0.025)
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Menu {
+                            generateMenu(getSortingMenu(
+                                isShowingPlays: isShowingPlays,
+                                setShowingPlays: { isShowingPlays = $0 }
+                            ))
+                        } label: {
+                            Image(systemName: "arrow.up.arrow.down")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(.resonatePurple)
+                        }
+                    }
+                }
             }
         }
-        .onAppear {
-            loadArtists()
+        .onAppear { loadArtists() }
+        .onChange(of: isShowingPlays) {
+            loadedArtistStats = loadedArtistStats.sorted {
+                isShowingPlays ? $0.totalPlayCount > $1.totalPlayCount : $0.timePlayed > $1.timePlayed
+            }
         }
     }
     

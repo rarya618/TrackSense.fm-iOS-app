@@ -9,42 +9,65 @@ import SwiftUI
 import MusicKit
 
 struct TopAlbumsView: View {
+    let albumStats: [AlbumStat]
+    @State private var isShowingPlays: Bool
+
     @State private var isLoading = true
     @State private var loadedAlbumStats: [AlbumStat] = []
-    
     @State private var selectedAlbum: Album?
-    
-    let albumStats: [AlbumStat]
-    
+
+    init(albumStats: [AlbumStat], isShowingPlays: Bool) {
+        self.albumStats = albumStats
+        self._isShowingPlays = State(initialValue: isShowingPlays)
+    }
+
     func setSelectedAlbum(album: Album) {
         selectedAlbum = album
     }
 
-    
     var body: some View {
         Group {
             if isLoading {
-                VStack {
-                    ClassicLoadingView(text: "Loading albums")
-                }
+                ClassicLoadingView(text: "Loading albums")
             } else {
                 ScrollView {
                     DisplayTopAlbums(
-                        albumStats: Array(albumStats),
-                        setSelectedAlbum: setSelectedAlbum
+                        albumStats: Array(loadedAlbumStats),
+                        setSelectedAlbum: setSelectedAlbum,
+                        isShowingPlays: isShowingPlays
                     )
                     .padding()
-                    
+
                     ViewSpacer()
                 }
-                .navigationTitle("Top albums")
-                .navigationDestination(item: $selectedAlbum) { album in
-                    AlbumView(album: album)
+                .navigationBarTitleDisplayMode(.inline)
+                .navigationDestination(item: $selectedAlbum) { AlbumView(album: $0) }
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        Text("Top albums")
+                            .font(.montserrat(size: 17, weight: .bold))
+                            .tracking(17 * -0.025)
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Menu {
+                            generateMenu(getSortingMenu(
+                                isShowingPlays: isShowingPlays,
+                                setShowingPlays: { isShowingPlays = $0 }
+                            ))
+                        } label: {
+                            Image(systemName: "arrow.up.arrow.down")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(.resonatePurple)
+                        }
+                    }
                 }
             }
         }
-        .onAppear {
-            loadAlbums()
+        .onAppear { loadAlbums() }
+        .onChange(of: isShowingPlays) {
+            loadedAlbumStats = loadedAlbumStats.sorted {
+                isShowingPlays ? $0.totalPlayCount > $1.totalPlayCount : $0.timePlayed > $1.timePlayed
+            }
         }
     }
     

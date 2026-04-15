@@ -16,7 +16,9 @@ struct NowPlayingView: View {
     
     @State private var isPlaying: Bool = false
     
-    let size: CGFloat = 40
+    @Environment(\.colorScheme) var colorScheme
+
+    let size: CGFloat = 36
     
     private var artworkColor: Color {
         if let cgColor = currentSong?.artwork?.backgroundColor {
@@ -37,36 +39,33 @@ struct NowPlayingView: View {
         }
     }
 
-    private func idealColor (
+    private func idealColor(
         textColor: UIColor,
         backgroundColor: UIColor
     ) -> Color {
-        let white = UIColor(.resonateWhite)
-        
+        let traits = UITraitCollection(userInterfaceStyle: colorScheme == .dark ? .dark : .light)
+        let white = UIColor(.resonateWhite).resolvedColor(with: traits)
+
         let backgroundRatio = backgroundColor.contrastRatio(with: white)
         let textRatio = textColor.contrastRatio(with: white)
 
-        if (textRatio > backgroundRatio) {
-            return Color(textColor)
-        } else if (backgroundRatio > 3) {
+        if backgroundRatio >= 3.0 {
             return Color(backgroundColor)
+        } else if textRatio >= 3.0 {
+            return Color(textColor)
         } else {
             return Color(backgroundColor)
         }
     }
 
     private var adjustedTextColor: Color {
-        // depend on colorScheme to force recalculation on toggle
-        _ = colorScheme
-        
         if let bgCG = currentSong?.artwork?.backgroundColor,
-            let textCG = currentSong?.artwork?.primaryTextColor {
-            let textColor = UIColor(cgColor: textCG)
-            let bgColor = UIColor(cgColor: bgCG)
-                
-            return idealColor(textColor: textColor, backgroundColor: bgColor)
+           let textCG = currentSong?.artwork?.primaryTextColor {
+            return idealColor(
+                textColor: UIColor(cgColor: textCG),
+                backgroundColor: UIColor(cgColor: bgCG)
+            )
         }
-
         return .resonatePurple
     }
 
@@ -85,7 +84,7 @@ struct NowPlayingView: View {
         return min(max(playbackTime, 0), safeDuration)
     }
     
-    let progressBarHeight: CGFloat = 6
+    let progressBarHeight: CGFloat = 4
     
     var body: some View {
         ZStack(alignment: .bottomLeading) {
@@ -96,27 +95,47 @@ struct NowPlayingView: View {
                         artwork: song.artwork,
                         width: size,
                         height: size,
-                        cornerRadius: 6
+                        cornerRadius: size
                     )
-                    .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
 
                     HStack {
                         // Song info + controls
                         VStack (alignment: .leading, spacing: 1) {
-                            // Title + artist
-                            Text(song.title)
-                                .font(.montserrat(size: 14, weight: .bold))
-                                .lineLimit(1)
+                            // Scrolling text for long text
+                            MarqueeText(
+                                text: song.title,
+                                font: .montserrat(size: 14, weight: .bold),
+                                color: adjustedTextColor,
+                                tracking: 14 * -0.025
+                            )
+                            .frame(height: 17)
+                            .clipped()
+
+                            MarqueeText(
+                                text: song.artistName,
+                                font: .montserrat(size: 13, weight: .medium),
+                                color: adjustedTextColor.opacity(0.8),
+                                tracking: 13 * -0.025
+                            )
+                            .frame(height: 16)
+                            .clipped()
                             
-                            Text(song.artistName)
-                                .font(.montserrat(size: 12))
-                                .lineLimit(1)
+//                            // Title + artist
+//                            Text(song.title)
+//                                .font(.montserrat(size: 14, weight: .bold))
+//                                .tracking(14 * -0.025)
+//                                .lineLimit(1)
+//                            
+//                            Text(song.artistName)
+//                                .font(.montserrat(size: 12, weight: .medium))
+//                                .tracking(12 * -0.025)
+//                                .lineLimit(1)
                         }
                         Spacer(minLength: 0)
                     }
                     
                     // Controls
-                    HStack (spacing: 6) {
+                    HStack (spacing: 8) {
                         Button(action: togglePlayPause) {
                             Image(systemName: isPlaying ? "pause.fill" : "play.fill")
                                 .id(isPlaying)
@@ -138,10 +157,13 @@ struct NowPlayingView: View {
                     }
                 }
             }
-            .padding(.top, 8)
-            .padding(.bottom, 6 + progressBarHeight)
-            .padding(.horizontal, 12)
-            .background(
+            .padding(.vertical, 8)
+            .padding(.leading, 10)
+            .padding(.trailing, 14)
+//            .padding(.top, 8)
+//            .padding(.bottom, 6 + progressBarHeight)
+//            .padding(.horizontal, 12)
+//            .background(
 //                LinearGradient(
 //                    colors: [
 //                        artworkColor.opacity(0.5),
@@ -161,19 +183,19 @@ struct NowPlayingView: View {
 //                    startPoint: .top,
 //                    endPoint: .bottom
 //                )
-                MeshGradient(
-                    width: 2,
-                    height: 2,
-                    points: [
-                        [0, 0], [1, 0],
-                        [0, 1], [1, 1]
-                    ],
-                    colors: [
-                        highlightColor, artworkColor,
-                        secondaryColor, artworkColor.opacity(0.8)
-                    ]
-                )
-            )
+//                MeshGradient(
+//                    width: 2,
+//                    height: 2,
+//                    points: [
+//                        [0, 0], [1, 0],
+//                        [0, 1], [1, 1]
+//                    ],
+//                    colors: [
+//                        highlightColor, artworkColor,
+//                        secondaryColor, artworkColor.opacity(0.8)
+//                    ]
+//                )
+//            )
 
             GeometryReader { geo in
                 let width = geo.size.width
@@ -183,8 +205,8 @@ struct NowPlayingView: View {
                     .fill(
                         LinearGradient(
                             colors: [
-                                primaryColor.opacity(0.9),
-                                primaryColor.opacity(1)
+                                adjustedTextColor.opacity(0.9),
+                                adjustedTextColor.opacity(1)
                             ],
                             startPoint: .leading,
                             endPoint: .trailing
@@ -196,7 +218,8 @@ struct NowPlayingView: View {
             }
             .frame(height: progressBarHeight)   // 👈 constrains GeometryReader
         }
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .contentShape(Capsule())
+        .clipShape(Capsule())
         .onAppear {
             refreshTask?.cancel()
             refreshTask = Task {
@@ -220,10 +243,15 @@ struct NowPlayingView: View {
             refreshTask?.cancel()
             refreshTask = nil
         }
-        .foregroundColor(primaryColor)
-//        .background(artworkColor)
-//        .cornerRadius(10)
-        .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: 10))
+        .foregroundColor(adjustedTextColor)
+//        .background(adjustedTextColor.opacity(0.08))
+        .background {
+            Capsule()
+                .fill(adjustedTextColor.opacity(0.06))
+                .stroke(adjustedTextColor.opacity(0.25), lineWidth: 1)
+        }
+//        .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: 10))
+        .glassEffect(.regular)
         .shadow(color: .black.opacity(0.08), radius: 5, x: 0, y: 4)
     }
     

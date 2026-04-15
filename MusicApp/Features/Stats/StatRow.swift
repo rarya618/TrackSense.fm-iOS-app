@@ -41,6 +41,7 @@ struct StatRow: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
                         .font(.montserrat(size: 16, weight: .bold))
+                        .tracking(16 * -0.025)
                         .foregroundColor(.customPurple)
                         .lineLimit(1)
                     
@@ -48,11 +49,13 @@ struct StatRow: View {
                             if let subtitle = subtitle {
                                 Text(subtitle)
                                     .font(.montserrat(size: 15, weight: .medium))
+                                    .tracking(15 * -0.025)
                                     .foregroundColor(.customPurple)
                                     .lineLimit(1)
                                 
                                 Text("-")
                                     .font(.montserrat(size: 15, weight: .medium))
+                                    .tracking(15 * -0.025)
                                     .lineLimit(1)
                             }
                             
@@ -71,12 +74,12 @@ struct StatRow: View {
                     .foregroundColor(.secondary)
                     .opacity(0.7)
             }
-            .padding(.vertical, 13)
+            .padding(.vertical, 12)
             .padding(.horizontal, 15)
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.resonatePurple.opacity(0.08))
+                    .fill(Color.resonatePurple.opacity(0.06))
                     .stroke(Color.resonatePurple.opacity(0.25), lineWidth: 1)
             )
         }

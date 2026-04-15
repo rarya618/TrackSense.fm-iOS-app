@@ -116,7 +116,6 @@ struct ArtistView: View {
                             }
                             .padding(.top, 6)
                             .padding(.bottom, 4)
-                            .padding(.leading, 4)
                             
                             VStack {
                                 if currentSection == 0 {
@@ -126,6 +125,7 @@ struct ArtistView: View {
                                         errorMessage: libraryErrorMessage,
                                         setSelectedSong: setSelectedSong
                                     )
+                                    .padding(.horizontal)
                                 }
                                 else if currentSection == 1 {
                                     VStack(alignment: .leading, spacing: 20) {
@@ -133,13 +133,15 @@ struct ArtistView: View {
                                             // MARK: - Chart Card
                                             ChartCard(
                                                 title: "Play History",
-                                                cloudData: cloudArtistData
+                                                cloudData: cloudArtistData,
+                                                color: adjustedArtworkColor
                                             )
                                             
                                             // MARK: - Description
                                             Text("This chart shows how your total plays have changed over time. Data updates when content is synced to the cloud.")
-                                                .font(.footnote)
+                                                .font(.montserrat(size: 12))
                                                 .foregroundStyle(.secondary)
+                                                .padding(.horizontal)
                                                 .padding(.bottom, 10)
                                         }
                                         
@@ -148,22 +150,22 @@ struct ArtistView: View {
                                                 history: cloud.history,
                                                 unitLabel: "plays"
                                             )
+                                            .padding(.horizontal)
                                         }
                                         
                                         VStack(alignment: .leading, spacing: 12) {
-                                            Text("Stats")
-                                                .fontWeight(.bold)
-                                                .font(.system(size: 24))
+                                            SectionHeader(
+                                                title: "Stats",
+                                                subtitle: "See your artist stats in a glance",
+                                                hasLeadingPadding: false
+                                            )
                                             
                                             ArtistStatsView(
                                                 artist: artist,
                                                 librarySongs: librarySongs
                                             )
                                         }
-                                        .padding(.top, 22)
-                                        .padding(.bottom, 20)
-                                        .padding(.horizontal, 20)
-                                        .glassEffect(in: RoundedRectangle(cornerRadius: 16))
+                                        .padding(.horizontal)
                                     }
                                     .foregroundColor(adjustedArtworkColor)
                                 }
@@ -177,15 +179,14 @@ struct ArtistView: View {
                                     )
                                 }
                             }
-                            .padding(.horizontal, 20)
                 
                             ViewSpacer()
                         }
                     }
-                    .padding(.top, 24)
+                    .padding(.top, 20)
                     .frame(maxWidth: .infinity)
                     .background(Color.resonateWhite.ignoresSafeArea(edges: .bottom))
-                    .cornerRadius(28)
+                    .cornerRadius(20)
                 }
             }
             .background(artworkColor)

@@ -22,7 +22,7 @@ struct SongRow: View {
             artistName: song.artistName,
             playCount: song.playCount,
             removeSpacer: false,
-            removeEllipsis: false,
+            removeEllipsis: true, // removed temporaily until feature is added
 //            menuItems: getMenuForSong(
 //                song,
 //                showMessage: { msg in await showMessage(msg) },

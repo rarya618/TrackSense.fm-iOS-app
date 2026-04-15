@@ -20,7 +20,11 @@ struct FromAppleMusicView: View {
         if let detailedArtist = detailedArtist {
             if let latestRelease = detailedArtist.latestRelease {
                 VStack {
-                    Title(text: "Latest Release")
+                    SectionHeader(
+                        title: "Latest Release",
+                        subtitle: "Check out what new stuff is out",
+                        hasLeadingPadding: false
+                    )
                         .foregroundColor(adjustedArtworkColor)
                     
                     HStack {
@@ -37,13 +41,18 @@ struct FromAppleMusicView: View {
                     }
                     
                 }
+                .padding(.horizontal)
                 .padding(.bottom, 2)
             }
             
             
             if let topSongs = detailedArtist.topSongs {
                 VStack {
-                    Title(text: "Top Songs")
+                    SectionHeader(
+                        title: "Top Songs",
+                        subtitle: "See the artist's most listened songs",
+                        hasLeadingPadding: false
+                    )
                         .foregroundColor(adjustedArtworkColor)
                     
                     ForEach(topSongs.prefix(5), id: \.id) { song in
@@ -57,13 +66,17 @@ struct FromAppleMusicView: View {
                         // }
                     }
                 }
+                .padding(.horizontal)
                 .padding(.bottom, 18)
             }
             
             if let albums = detailedArtist.fullAlbums {
                 VStack {
                     if albums.first != nil {
-                        Title(text: "Albums")
+                        SectionHeader(
+                            title: "Albums",
+                            subtitle: "Here's all the albums from the artist"
+                        )
                             .foregroundColor(adjustedArtworkColor)
                         
                         ScrollView(.horizontal, showsIndicators: false) {
@@ -74,6 +87,7 @@ struct FromAppleMusicView: View {
                                     }
                                 }
                             }
+                            .padding(.horizontal)
                         }
                     }
                 }

@@ -117,6 +117,7 @@ struct NowPlayingFullView: View {
     let goToAlbum: () -> Void
     let goToArtist: () -> Void
     
+    @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject var overlayManager: OverlayManager
     @EnvironmentObject var authManager: AuthManager
     
@@ -191,6 +192,24 @@ struct NowPlayingFullView: View {
         let appleText = UIColor(cgColor: textCG)
         
         return Color(appleText)
+    }
+    
+    private var betterTextColor: Color {
+        // depend on colorScheme to force recalculation on toggle
+        _ = colorScheme
+        
+        // Safely unwrap MusicKit-provided CGColors and construct UIColors correctly.
+        // Fallback to .resonatePurple if anything is missing.
+        guard
+            let textCG = currentSong?.artwork?.primaryTextColor,
+            let bgCG = currentSong?.artwork?.backgroundColor
+        else {
+            return .resonatePurple
+        }
+
+        let textColor = UIColor(cgColor: textCG)
+        let bgColor = UIColor(cgColor: bgCG)
+        return idealColor(textColor: textColor, backgroundColor: bgColor)
     }
     
     private var secondaryColor: Color { artworkColor.adjusted(brightness: -0.2) } // Slightly deeper
@@ -391,7 +410,7 @@ struct NowPlayingFullView: View {
                 AddToPlaylist(
                     song: currentSong,
                     togglePlaylistsSheetVisible: togglePlaylistsSheetVisible,
-                    color: .resonatePurple,
+                    color: betterTextColor,
                     bgColor: .resonateWhite
                 )
             }
@@ -407,7 +426,7 @@ struct NowPlayingFullView: View {
                     cloudData: cloudSongData,
                     setOverlayMessage: overlayManager.showOverlay,
                     setErrorMessage: overlayManager.showError,
-                    color: .resonatePurple,
+                    color: betterTextColor,
                     bgColor: .resonateWhite
                 )
             }
@@ -419,7 +438,7 @@ struct NowPlayingFullView: View {
         .sheet(isPresented: $isQueueVisible) {
             NavigationStack {
                 QueueView(
-                    color: .resonatePurple,
+                    color: betterTextColor,
                     bgColor: .resonateWhite
                 )
             }
@@ -431,7 +450,7 @@ struct NowPlayingFullView: View {
         .sheet(isPresented: $isLyricsVisible) {
             NavigationStack {
                 LyricsView(
-                    color: .resonatePurple,
+                    color: betterTextColor,
                     bgColor: .resonateWhite
                 )
             }
@@ -468,7 +487,7 @@ struct NowPlayingFullView: View {
                 }
             }
                 .background(Color.resonateWhite)
-                .presentationDetents([.height(450)]) // allows swipe-up expansion
+                .presentationDetents([.medium, .large]) // allows swipe-up expansion
                 .presentationDragIndicator(.visible)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

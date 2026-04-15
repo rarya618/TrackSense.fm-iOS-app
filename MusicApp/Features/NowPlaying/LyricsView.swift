@@ -49,7 +49,15 @@ struct LyricsView: View {
         }
         .foregroundStyle(color)
         .background(bgColor)
-        .navigationTitle("Lyrics")
+//        .navigationTitle("Lyrics")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("Lyrics")
+                    .font(.montserrat(size: 17, weight: .bold))
+                    .tracking(17 * -0.025)
+                    
+            }
+        }
     }
 }

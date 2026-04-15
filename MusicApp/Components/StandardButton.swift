@@ -19,6 +19,7 @@ struct StandardButton: View {
             Text(label)
                 .foregroundStyle(color)
                 .font(.montserrat(size: 17, weight: .bold))
+                .tracking(17 * -0.025)
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(bgColor)

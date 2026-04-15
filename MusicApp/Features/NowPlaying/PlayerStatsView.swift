@@ -32,7 +32,15 @@ struct PlayerStatsView: View {
             .foregroundStyle(color)
             .background(bgColor)
         }
-        .navigationTitle("Stats")
+//        .navigationTitle("Stats")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("Stats")
+                    .font(.montserrat(size: 17, weight: .bold))
+                    .tracking(17 * -0.025)
+                    
+            }
+        }
     }
 }

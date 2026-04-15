@@ -182,7 +182,7 @@ struct AlbumView: View {
                     )
                 }
                     .background(Color.resonateWhite)
-                    .presentationDetents([.height(450)]) // allows swipe-up expansion
+                    .presentationDetents([.medium, .large]) // allows swipe-up expansion
                     .presentationDragIndicator(.visible)
             }
             .task {

@@ -27,6 +27,7 @@ struct TotalPlaysStat: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(totalPlays.formatted())
                                 .font(.montserrat(size: 32, weight: .bold))
+                                .tracking(32 * -0.025)
                                 .foregroundStyle(Color.customPurple)
 
                                 Text("times played")

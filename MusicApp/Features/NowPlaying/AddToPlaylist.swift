@@ -75,8 +75,16 @@ struct AddToPlaylist: View {
         }
         .foregroundStyle(color)
         .background(bgColor)
-        .navigationTitle("Add to a Playlist")
+//        .navigationTitle("Add to a Playlist")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("Add to a Playlist")
+                    .font(.montserrat(size: 17, weight: .bold))
+                    .tracking(17 * -0.025)
+                    
+            }
+        }
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search for Playlists")
         .sheet(isPresented: $isNewPlaylistsSheetVisible) {
             NavigationStack {

@@ -16,6 +16,7 @@ struct InlineSearchBar: View {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(.secondary)
             TextField(label, text: $searchText)
+                .tracking(17 * -0.025)
                 .textFieldStyle(PlainTextFieldStyle())
                 .padding(.vertical, 12)
         }
