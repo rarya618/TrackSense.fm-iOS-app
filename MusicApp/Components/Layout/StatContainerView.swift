@@ -44,7 +44,7 @@ struct StatContainerView: View {
             if let icon = systemImage {
                 Image(systemName: icon)
                     .font(.system(size: 32, weight: .bold))
-                    .foregroundStyle(color.opacity(0.16))
+                    .foregroundStyle(color.opacity(0.32))
                     .padding(.vertical, 10)
                     .padding(.horizontal, 16)
             }

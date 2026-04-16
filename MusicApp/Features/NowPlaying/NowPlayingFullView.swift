@@ -374,13 +374,21 @@ struct NowPlayingFullView: View {
             }
         }
         .onAppear {
+            // Synchronously pre-populate from the system player so there's no spinner
+            // if a song is already playing when the view opens.
+            if case .song(let song) = SystemMusicPlayer.shared.queue.currentEntry?.item {
+                currentSong = song
+                isInitialLoad = false
+            }
+            isPlaying = SystemMusicPlayer.shared.state.playbackStatus == .playing
+
             refreshTask?.cancel()
             refreshTask = Task {
                 var lastSongID: MusicItemID? = nil
                 while !Task.isCancelled {
                     await fetchCurrentlyPlayingWithLibraryData()
+                    isInitialLoad = false  // dismiss spinner as soon as local data is ready
                     await getSongFromRealtimeDatabase()
-                    isInitialLoad = false  // after first fetch completes
 
                     // Update Now Playing Info only when song changes
                     if currentSong?.id != lastSongID {
