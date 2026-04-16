@@ -184,6 +184,7 @@ struct AlbumView: View {
                     .background(Color.resonateWhite)
                     .presentationDetents([.medium, .large]) // allows swipe-up expansion
                     .presentationDragIndicator(.visible)
+                    .presentationCornerRadius(20)
             }
             .task {
                 await getAlbumFromRealtimeDatabase()
@@ -268,23 +269,6 @@ struct AlbumView: View {
     }
 }
 
-func idealColor (
-    textColor: UIColor,
-    backgroundColor: UIColor
-) -> Color {
-    let white = UIColor(.resonateWhite)
-    
-    let backgroundRatio = backgroundColor.contrastRatio(with: white)
-    let textRatio = textColor.contrastRatio(with: white)
-
-    if (textRatio > 4.5) {
-        return Color(textColor)
-    } else if (textRatio < backgroundRatio) {
-        return Color(backgroundColor)
-    } else {
-        return Color(textColor)
-    }
-}
 
 func getTotalPlayCount(_ tracks: MusicItemCollection<Track>) -> Int {
     return tracks.reduce(0) { $0 + ($1.playCount ?? 0) }

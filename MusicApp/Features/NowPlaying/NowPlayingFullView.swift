@@ -453,6 +453,7 @@ struct NowPlayingFullView: View {
         .sheet(isPresented: $isLyricsVisible) {
             NavigationStack {
                 LyricsView(
+                    song: currentSong,
                     color: betterTextColor,
                     bgColor: .resonateWhite
                 )

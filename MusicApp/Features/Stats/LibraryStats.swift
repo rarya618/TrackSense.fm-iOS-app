@@ -17,13 +17,18 @@ struct LibraryStats: View {
     @State private var songsMilestoneData: [Int: Int] = [:]
     @State private var albumsMilestoneData: [Int: Int] = [:]
     @State private var artistsMilestoneData: [Int: Int] = [:]
-    
+
     @State private var selectedMilestonePage: Int = 0
-    
-    @State private var libraryLengthHours: Int = 0
-    
-    func setCurrentSection(_ index: Int) {
-        selectedMilestonePage = index
+
+    // Computed so it stays accurate when songs change, avoids the
+    // state-update-inside-loop bug in the previous getLibraryLength().
+    private var libraryLength: String {
+        let totalSeconds = songs.reduce(0.0) { $0 + ($1.duration ?? 0) }
+        let hours = Int(totalSeconds / 3600)
+        let minutes = Int((totalSeconds / 60).truncatingRemainder(dividingBy: 60))
+        if hours == 0 { return "\(minutes) min" }
+        if minutes == 0 { return "\(hours) hrs" }
+        return "\(hours) hrs \(minutes) min"
     }
 
     var body: some View {
@@ -31,20 +36,17 @@ struct LibraryStats: View {
             ClassicLoadingView(text: "Loading data")
         } else {
             VStack(spacing: 24) {
+                // MARK: - Milestones
                 VStack(spacing: 8) {
                     SectionHeader(title: "Milestones", subtitle: "How deep your listening goes")
-                    
+
                     CustomPicker(
                         color: .resonatePurple,
                         currentSection: selectedMilestonePage,
-                        setCurrentSection: setCurrentSection,
-                        options: [
-                            "Songs",
-                            "Albums",
-                            "Artists"
-                        ]
+                        setCurrentSection: { selectedMilestonePage = $0 },
+                        options: ["Songs", "Albums", "Artists"]
                     )
-                    
+
                     TabView(selection: $selectedMilestonePage) {
                         ShowMilestones(
                             title: "Songs",
@@ -52,14 +54,14 @@ struct LibraryStats: View {
                             totalCount: songs.count
                         )
                         .tag(0)
-                        
+
                         ShowMilestones(
                             title: "Albums",
                             milestoneData: albumsMilestoneData,
                             totalCount: albumStats.count
                         )
                         .tag(1)
-                        
+
                         ShowMilestones(
                             title: "Artists",
                             milestoneData: artistsMilestoneData,
@@ -71,77 +73,75 @@ struct LibraryStats: View {
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 }
                 .padding(.top, 8)
-                
+
+                // MARK: - Library Stats
                 VStack(alignment: .leading, spacing: 12) {
-                    SectionHeader(title: "Library Stats", subtitle: "See your stats in a glance")
-                    
-                    VStack(spacing: 6) {
-                        HStack(spacing: 6) {
-                            StatContainerView(title: "Artists", value: artistStats.count.formatted())
-                            StatContainerView(title: "Albums", value: albumStats.count.formatted())
-                        }
-                        HStack(spacing: 6) {
-                            StatContainerView(title: "Songs", value: songs.count.formatted())
-                            StatContainerView(title: "Playlists", value: playlists.count.formatted())
-                        }
+                    SectionHeader(
+                        title: "Library Stats",
+                        subtitle: "Your library at a glance"
+                    )
+
+                    VStack(spacing: 10) {
+                        StatContainerView(
+                            title: "Songs",
+                            value: songs.count.formatted(),
+                            systemImage: "music.note"
+                        )
                         
-                        StatContainerView(title: "Library Length", value: "\(libraryLengthHours) hours")
+                        StatContainerView(
+                            title: "Albums",
+                            value: albumStats.count.formatted(),
+                            systemImage: "square.stack.fill"
+                        )
+                        
+                        StatContainerView(
+                            title: "Artists",
+                            value: artistStats.count.formatted(),
+                            systemImage: "person.2.fill"
+                        )
+                        
+                        StatContainerView(
+                            title: "Playlists",
+                            value: playlists.count.formatted(),
+                            systemImage: "list.bullet"
+                        )
+
+                        StatContainerView(
+                            title: "Library Length",
+                            value: libraryLength,
+                            systemImage: "clock.fill"
+                        )
                     }
                     .padding(.horizontal)
                 }
-//                .padding(.vertical, 24)
-//                .padding(.horizontal, 22)
-//                .clipShape(RoundedRectangle(cornerRadius: 16))
-//                .overlay(
-//                    RoundedRectangle(cornerRadius: 16)
-//                        .stroke(Color.resonatePurple.opacity(0.3), lineWidth: 1)
-//                )
-
             }
             .task {
-                getLibraryLength()
-                
                 updateSongsMilestones()
                 updateAlbumsMilestones()
                 updateArtistsMilestones()
             }
-            .onChange(of: songs) { oldValue, newValue in
-                getLibraryLength()
+            .onChange(of: songs) { _, _ in
                 updateSongsMilestones()
             }
-            .onChange(of: albumStats) { oldValue, newValue in
+            .onChange(of: albumStats) { _, _ in
                 updateAlbumsMilestones()
             }
-            .onChange(of: artistStats) { oldValue, newValue in
+            .onChange(of: artistStats) { _, _ in
                 updateArtistsMilestones()
             }
         }
     }
-    
-    func getLibraryLength() {
-        var total: Double = 0
 
-        for song in songs {
-            if let duration = song.duration {
-                total += duration
-            }
-            
-            libraryLengthHours = Int((total / 60) / 60)
-        }
-    }
-    
+    // MARK: - Milestones
+
     func calculateMilestones<T>(
         from items: [T],
         playCount: (T) -> Int?
     ) -> [Int: Int] {
         let thresholds = [10, 25, 50, 100, 250, 500, 1000]
-        var data: [Int: Int] = [:]
-
-        for threshold in thresholds {
-            data[threshold] = items.filter { (playCount($0) ?? 0) >= threshold }.count
+        return thresholds.reduce(into: [:]) { result, threshold in
+            result[threshold] = items.filter { (playCount($0) ?? 0) >= threshold }.count
         }
-
-        return data
     }
 
     func updateSongsMilestones() {

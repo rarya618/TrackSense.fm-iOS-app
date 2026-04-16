@@ -10,21 +10,25 @@ import MusicKit
 
 struct Pill: View {
     let text: String
-    let foregroundColor: Color
-    let backgroundColor: Color
+    let color: Color
+    var systemImage: String? = nil
 
     var body: some View {
-        Text(text)
-            .font(.montserrat(size: 10))
-            .fontWeight(.bold)
-            .lineLimit(1)
-            .foregroundStyle(backgroundColor)
-            .padding(.horizontal, 9)
-            .padding(.vertical, 4)
-            .background(Color.clear)
-            .overlay(
-                Capsule().stroke(backgroundColor, lineWidth: 1)
-            )
+        Group {
+            if let icon = systemImage {
+                Label(text, systemImage: icon)
+            } else {
+                Text(text)
+            }
+        }
+        .font(.montserrat(size: 12, weight: .medium))
+        .tracking(12 * -0.025)
+        .lineLimit(1)
+        .foregroundStyle(color)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .background(Color.clear)
+        .overlay(Capsule().stroke(color.opacity(0.5), lineWidth: 1))
     }
 }
 
@@ -41,6 +45,9 @@ struct DetailsView: View {
     let audioVariants: [AudioVariant]?
     var menuItems: [[MenuItem]] = []
     var toggleMenu: () -> Void = {}
+    var goToAlbum: (() -> Void)? = nil
+
+    private let topContentInset: CGFloat = 110
 
     private var artworkColor: Color {
         if let cgColor = artwork?.backgroundColor {
@@ -58,24 +65,6 @@ struct DetailsView: View {
         }
     }
 
-    private func idealColor (
-        textColor: UIColor,
-        backgroundColor: UIColor
-    ) -> Color {
-        let white = UIColor(.resonateWhite)
-        
-        let backgroundRatio = backgroundColor.contrastRatio(with: white)
-        let textRatio = textColor.contrastRatio(with: white)
-
-        if (backgroundRatio > 4.5) {
-            return Color(backgroundColor)
-        } else if (textRatio > backgroundRatio) {
-            return Color(textColor)
-        } else {
-            return Color(backgroundColor)
-        }
-    }
-    
     private var betterTextColor: Color {
         if let textCG = artwork?.primaryTextColor,
             let bgCG = artwork?.backgroundColor {
@@ -91,7 +80,7 @@ struct DetailsView: View {
             // Background derived from artwork
             artworkColor
                 .ignoresSafeArea()
-        
+
             VStack(spacing: 28) {
                 HStack(alignment: .top, spacing: 16) {
                     ArtworkView(
@@ -112,38 +101,17 @@ struct DetailsView: View {
                                 .font(.montserrat(size: 20, weight: .bold))
                                 .tracking(20 * -0.025)
                                 .fixedSize(horizontal: false, vertical: true)
-                            
+
                             Text(artistName)
                                 .font(.montserrat(size: 16, weight: .medium))
                                 .tracking(16 * -0.025)
                         }
-                    
+
                         if let album = albumTitle {
-                            Text(album)
-                                .font(.montserrat(size: 14))
-                                .tracking(14 * -0.025)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        
-                        FlowLayout(spacing: 6, rowSpacing: 6) {
-                            if isAppleDigitalMaster == true {
-                                Pill(
-                                    text: "Apple Digital Master",
-                                    foregroundColor: artworkColor,
-                                    backgroundColor: primaryColor
-                                )
-                                
-                                if let audioVariants = audioVariants {
-                                    ForEach(audioVariants.indices, id: \.self) { idx in
-                                        let audioVariant = audioVariants[idx]
-                                        Pill(
-                                            text: convertAudioVariantToText(audioVariant: audioVariant),
-                                            foregroundColor: artworkColor,
-                                            backgroundColor: primaryColor
-                                        )
-                                    }
-                                }
-                            }
+                            Label(album, systemImage: "square.stack")
+                                .font(.montserrat(size: 13))
+                                .tracking(13 * -0.025)
+                                .opacity(0.75)
                         }
                     }
                     .foregroundStyle(primaryColor)
@@ -161,24 +129,33 @@ struct DetailsView: View {
                     primaryColor: primaryColor,
                     betterTextColor: betterTextColor,
                     menuItems: menuItems,
-                    toggleMenu: toggleMenu
+                    toggleMenu: toggleMenu,
+                    goToAlbum: goToAlbum
                 )
             }
             .padding(.horizontal)
-            .padding(.top, 110)
+            .padding(.top, topContentInset)
             .padding(.bottom, 10)
         }
     }
 }
 
-func convertAudioVariantToText(audioVariant: AudioVariant) -> String {
-    if (audioVariant.description == ".lossless") {
-        return "Lossless"
-    } else if (audioVariant.description == ".dolbyAtmos") {
-        return "Dolby Atmos"
-    } else if (audioVariant.description == ".highResolutionLossless") {
-        return "Hi-Res Lossless"
-    } else {
-        return audioVariant.description
+extension AudioVariant {
+    var displayName: String {
+        switch description {
+        case ".lossless": return "Lossless"
+        case ".dolbyAtmos": return "Dolby Atmos"
+        case ".highResolutionLossless": return "Hi-Res Lossless"
+        default: return description
+        }
+    }
+
+    var displayIcon: String {
+        switch description {
+        case ".lossless": return "waveform"
+        case ".dolbyAtmos": return "dot.radiowaves.left.and.right"
+        case ".highResolutionLossless": return "waveform.badge.magnifyingglass"
+        default: return "waveform"
+        }
     }
 }

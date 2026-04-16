@@ -170,21 +170,19 @@ struct MediaPlayerView: View {
                     HStack {
                         VStack(alignment: .leading, spacing: 10) {
                             HStack(spacing: 6) {
-                                if let audioVariants = song.audioVariants {
-                                    if let lastVariant = audioVariants.last {
-                                        Pill(
-                                            text: convertAudioVariantToText(audioVariant: lastVariant),
-                                            foregroundColor: artworkColor,
-                                            backgroundColor: primaryColor
-                                        )
-                                    }
+                                if let lastVariant = song.audioVariants?.last {
+                                    Pill(
+                                        text: lastVariant.displayName,
+                                        color: primaryColor,
+                                        systemImage: lastVariant.displayIcon
+                                    )
                                 }
 
                                 if !isSongInLibrary {
                                     Pill(
                                         text: "Not in library",
-                                        foregroundColor: artworkColor,
-                                        backgroundColor: primaryColor
+                                        color: primaryColor,
+                                        systemImage: "icloud.slash"
                                     )
                                 }
                             }

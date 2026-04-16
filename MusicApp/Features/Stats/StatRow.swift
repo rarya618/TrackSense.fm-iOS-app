@@ -74,7 +74,7 @@ struct StatRow: View {
                     .foregroundColor(.secondary)
                     .opacity(0.7)
             }
-            .padding(.vertical, 12)
+            .padding(.vertical, 13)
             .padding(.horizontal, 15)
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .overlay(

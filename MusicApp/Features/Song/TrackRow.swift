@@ -43,7 +43,7 @@ struct TrackRow: View {
                 onTap()
             }
         } else {
-            NavigationLink(destination: TrackView(track: track)) {
+            NavigationLink(destination: SongView(track: track)) {
                 HStack(spacing: 14) {
                     // Rank badge
                     ZStack {
@@ -116,21 +116,3 @@ struct TrackRow: View {
     }
 }
 
-extension UIColor {
-    var luminance: CGFloat {
-        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
-        getRed(&r, green: &g, blue: &b, alpha: &a)
-
-        func adjust(_ v: CGFloat) -> CGFloat {
-            return (v < 0.03928) ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4)
-        }
-
-        return 0.2126 * adjust(r) + 0.7152 * adjust(g) + 0.0722 * adjust(b)
-    }
-
-    func contrastRatio(with other: UIColor) -> CGFloat {
-        let l1 = luminance
-        let l2 = other.luminance
-        return (max(l1, l2) + 0.05) / (min(l1, l2) + 0.05)
-    }
-}

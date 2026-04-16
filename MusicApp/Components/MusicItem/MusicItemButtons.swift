@@ -18,6 +18,7 @@ struct MusicItemButtons: View {
     let betterTextColor: Color
     let menuItems: [[MenuItem]]
     var toggleMenu: () -> Void = {}
+    var goToAlbum: (() -> Void)? = nil
     
     var body: some View {
         HStack(spacing: 10) {
@@ -44,28 +45,15 @@ struct MusicItemButtons: View {
             .background(primaryColor)
             .cornerRadius(.infinity)
             
-//            // NEED TO IMPLEMENT [VERSION 1.1]
-//            // Go to Album
-//            if albumTitle != nil {
-//                Button(action: {}) {
-//                    Image(systemName: "square.stack")
-//                }
-//                .font(.montserrat(size: 20, weight: .bold))
-//                .foregroundColor(betterTextColor)
-//                .frame(maxWidth: 48, maxHeight: 48)
-//                .glassEffect(.regular.tint(Color.resonateWhite.opacity(0.5)))
-//            } else {
-//                Button(action: {}) {
-//                    Image(systemName: "shuffle")
-//                    Text("Shuffle")
-//                }
-//                .font(.montserrat(size: 16, weight: .bold))
-//                .foregroundColor(betterTextColor)
-//                .padding(.horizontal, 24)
-//                .padding(.vertical, 14)
-//                .frame(maxWidth: .infinity)
-//                .glassEffect(.regular.tint(Color.resonateWhite.opacity(0.5)))
-//            }
+            if let goToAlbum {
+                Button(action: goToAlbum) {
+                    Image(systemName: "square.stack")
+                }
+                .font(.montserrat(size: 20, weight: .bold))
+                .foregroundColor(betterTextColor)
+                .frame(maxWidth: 48, maxHeight: 48)
+                .glassEffect(.regular.tint(Color.resonateWhite.opacity(0.5)))
+            }
             
             Button(action: toggleMenu) {
                 Image(systemName: "ellipsis")

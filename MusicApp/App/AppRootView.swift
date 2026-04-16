@@ -149,21 +149,19 @@ struct AppRootView: View {
                     ArtistView(artist: artist)
                 }
                 .onAppear {
-                    refreshTask?.cancel()
-                    refreshTask = Task {
-                        var lastSongID: MusicItemID? = nil
-                        while !Task.isCancelled {
-                            await fetchCurrentlyPlayingWithLibraryData()
-                            try? await Task.sleep(nanoseconds: 1_000_000_000) // 1s
-                            if currentSong?.id != lastSongID {
-                                lastSongID = currentSong?.id
-                            }
-                        }
-                    }
+                    if !isPlayerExpanded { startRefreshTask() }
                 }
                 .onDisappear {
                     refreshTask?.cancel()
                     refreshTask = nil
+                }
+                .onChange(of: isPlayerExpanded) { _, expanded in
+                    if expanded {
+                        refreshTask?.cancel()
+                        refreshTask = nil
+                    } else {
+                        startRefreshTask()
+                    }
                 }
             }
 
@@ -192,6 +190,20 @@ struct AppRootView: View {
 
     func setCurrentPageId(id: String) {
         currentPageId = id
+    }
+
+    func startRefreshTask() {
+        refreshTask?.cancel()
+        refreshTask = Task {
+            while !Task.isCancelled {
+                await fetchCurrentlyPlayingWithLibraryData()
+                do {
+                    try await Task.sleep(nanoseconds: 1_000_000_000) // 1s
+                } catch {
+                    break
+                }
+            }
+        }
     }
     
     @MainActor
@@ -322,7 +334,7 @@ struct BottomNav: View {
                 }
             
             HStack {
-                HStack(spacing: 4) {
+                HStack(spacing: 0) {
                     BottomNavButton(
                         id: "stats",
                         currentPageId: currentPageId,
@@ -384,7 +396,7 @@ struct BottomNavButton: View {
     let icon: String
     let label: String
     let setCurrentPageId: (String) -> Void
-    var horizontalPadding: CGFloat = 28
+    var horizontalPadding: CGFloat = 16
     var verticalPadding: CGFloat = 8
     var hideLabel = false
 
@@ -411,6 +423,7 @@ struct BottomNavButton: View {
             .padding(.horizontal, horizontalPadding + (hideLabel ? 2 : 0))
             .padding(.vertical, verticalPadding + (hideLabel ? 4 : 0))
         }
+        .frame(maxWidth: .infinity)
         .foregroundStyle(
             isActive ? Color.resonatePurple : Color.resonatePurple.opacity(0.5)
         )

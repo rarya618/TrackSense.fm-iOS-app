@@ -39,7 +39,8 @@ struct WeeklyHistoryChart: View {
             let value = history[dateString]?[prop]
             allDates.append((date: currentDate, value: value))
             
-            currentDate = Calendar.current.date(byAdding: .day, value: 1, to: currentDate)!
+            guard let next = Calendar.current.date(byAdding: .day, value: 1, to: currentDate) else { break }
+            currentDate = next
         }
         
         return stride(from: 0, to: allDates.count, by: 7).map {
@@ -112,7 +113,7 @@ struct WeeklyHistoryChart: View {
                 }
             }
             // Forces the chart to always show the full 7-day width
-            .chartXScale(domain: week.first!.date...week.last!.date)
+            .chartXScale(domain: (week.first?.date ?? Date())...(week.last?.date ?? Date()))
             .chartYScale(domain: (min - 2)...(max + 2))
             .frame(height: 270)
         }

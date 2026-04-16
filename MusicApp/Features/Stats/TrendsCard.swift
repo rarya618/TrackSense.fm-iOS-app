@@ -11,122 +11,213 @@ import Charts
 struct TrendsCard: View {
     let history: [String: [String: Int]]?
     let unitLabel: String  // "h" or "plays"
-    
+    var color: Color = .resonatePurple
+
     private var stats: TrendStats? {
         calculateTrends()
     }
-    
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
+        VStack(alignment: .leading, spacing: 16) {
             SectionHeader(
                 title: "Trends",
-                subtitle: "Currently in beta",
+                subtitle: "How your listening habits evolve",
                 hasLeadingPadding: false
             )
-            
+
             if let s = stats {
-                
-                // MARK: - Daily Growth Section
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Daily Growth")
-                        .font(.montserrat(size: 16, weight: .bold))
-                        .tracking(16 * -0.025)
-                        .foregroundStyle(.secondary)
-                    
-                    HStack(spacing: 14) {
-                        TrendMetric(title: "Yesterday",
-                                    value: "+\(s.yesterdayGrowth) \(unitLabel)")
-                        TrendMetric(title: "7-day Avg",
-                                    value: String(format: "%.1f \(unitLabel)/day",
-                                                  s.sevenDayAvg))
-                        TrendMetric(title: "Peak Day",
-                                    value: "+\(s.peakGrowth) \(unitLabel)")
+
+                // MARK: - Sparkline Card
+                TrendSectionCard(color: color) {
+                    VStack(alignment: .leading, spacing: 14) {
+                        Text("Daily Growth")
+                            .font(.montserrat(size: 12, weight: .semibold))
+                            .tracking(12 * -0.02)
+                            .foregroundStyle(.secondary)
+                            .textCase(.uppercase)
+
+                        // Sparkline with area fill
+                        Chart(s.sparklineData) { item in
+                            AreaMark(
+                                x: .value("Day", item.index),
+                                y: .value("Growth", item.value)
+                            )
+                            .interpolationMethod(.catmullRom)
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [color.opacity(0.35), color.opacity(0.04)],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                            LineMark(
+                                x: .value("Day", item.index),
+                                y: .value("Growth", item.value)
+                            )
+                            .interpolationMethod(.catmullRom)
+                            .foregroundStyle(color)
+                            .lineStyle(StrokeStyle(lineWidth: 2))
+                        }
+                        .chartXAxis(.hidden)
+                        .chartYAxis(.hidden)
+                        .frame(height: 72)
+
+                        // Metrics row
+                        HStack(spacing: 0) {
+                            TrendMetric(
+                                title: "Yesterday",
+                                value: "+\(s.yesterdayGrowth) \(unitLabel)"
+                            )
+                            .frame(maxWidth: .infinity, alignment: .leading)
+
+                            Rectangle()
+                                .fill(color.opacity(0.2))
+                                .frame(width: 1, height: 30)
+
+                            TrendMetric(
+                                title: "7-Day Avg",
+                                value: String(format: "%.1f \(unitLabel)/day", s.sevenDayAvg)
+                            )
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.leading, 14)
+
+                            Rectangle()
+                                .fill(color.opacity(0.2))
+                                .frame(width: 1, height: 30)
+
+                            TrendMetric(
+                                title: "Peak Day",
+                                value: "+\(s.peakGrowth) \(unitLabel)"
+                            )
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.leading, 14)
+                        }
                     }
-                    
-                    // Sparkline
-                    Chart(s.sparklineData) { item in
-                        LineMark(
-                            x: .value("Day", item.index),
-                            y: .value("Growth", item.value)
-                        )
-                        .interpolationMethod(.catmullRom)
-                    }
-                    .chartXAxis(.hidden)
-                    .chartYAxis(.hidden)
-                    .frame(height: 40)
-                    .padding(.top, 6)
                 }
-                
-                Divider()
-                
-                // MARK: - Weekly Momentum
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Weekly Momentum")
-                        .font(.montserrat(size: 16, weight: .bold))
-                        .tracking(16 * -0.025)
-                        .foregroundStyle(.secondary)
-                    
-                    HStack(spacing: 12) {
-                        Text(s.weekTrendIcon)
-                            .foregroundStyle(s.weekTrendColor)
-                            .font(.montserrat(size: 20, weight: .bold))
-                        
-                        VStack(alignment: .leading, spacing: 1) {
-                            Text("This Week: +\(s.week1) \(unitLabel)")
-                                .font(.montserrat(size: 16, weight: .bold))
-                                .tracking(16 * -0.025)
-                            Text("Last Week: +\(s.week2) \(unitLabel)")
-                                .font(.montserrat(size: 14))
+
+                // MARK: - Weekly + Streak row
+                HStack(spacing: 12) {
+
+                    // Weekly Momentum
+                    TrendSectionCard(color: color) {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Weekly")
+                                .font(.montserrat(size: 12, weight: .semibold))
+                                .tracking(12 * -0.02)
+                                .foregroundStyle(.secondary)
+                                .textCase(.uppercase)
+
+                            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                                Text(s.weekTrendIcon)
+                                    .font(.montserrat(size: 14, weight: .bold))
+                                    .foregroundStyle(s.weekTrendColor)
+                                Text("\(abs(s.weekPctChange))%")
+                                    .font(.montserrat(size: 26, weight: .bold))
+                                    .tracking(26 * -0.025)
+                                    .foregroundStyle(s.weekTrendColor)
+                            }
+
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text("This week: \(s.week1) \(unitLabel)")
+                                    .font(.montserrat(size: 13, weight: .medium))
+                                    .tracking(13 * -0.025)
+                                Text("Last week: \(s.week2) \(unitLabel)")
+                                    .font(.montserrat(size: 12))
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    }
+
+                    // Streak
+                    TrendSectionCard(color: color) {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Streak")
+                                .font(.montserrat(size: 12, weight: .semibold))
+                                .tracking(12 * -0.02)
+                                .foregroundStyle(.secondary)
+                                .textCase(.uppercase)
+
+                            Spacer()
+
+                            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                                Text("\(s.currentStreak)")
+                                    .font(.montserrat(size: 26, weight: .bold))
+                                    .tracking(26 * -0.025)
+                                    .foregroundStyle(.primary)
+                                Text("days")
+                                    .font(.montserrat(size: 14, weight: .medium))
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            Text("Best: \(s.longestStreak) days")
+                                .font(.montserrat(size: 12))
                                 .foregroundStyle(.secondary)
                         }
-                        
-                        Spacer()
-                        
-                        Text("\(s.weekPctChange)%")
-                            .font(.montserrat(size: 18, weight: .bold))
-                            .foregroundStyle(s.weekTrendColor)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     }
                 }
-                
-                Divider()
-                
-                // MARK: - Consistency Score
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Consistency")
-                        .font(.montserrat(size: 16, weight: .bold))
-                        .tracking(16 * -0.025)
-                        .foregroundStyle(.secondary)
-                    
-                    HStack {
-                        Text("\(s.consistency)%")
-                            .font(.montserrat(size: 20, weight: .bold))
-                            .tracking(20 * -0.025)
+
+                // MARK: - Consistency
+                TrendSectionCard(color: color) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack(alignment: .firstTextBaseline) {
+                            Text("Consistency")
+                                .font(.montserrat(size: 12, weight: .semibold))
+                                .tracking(12 * -0.02)
+                                .foregroundStyle(.secondary)
+                                .textCase(.uppercase)
+
+                            Spacer()
+
+                            Text("\(s.consistency)%")
+                                .font(.montserrat(size: 18, weight: .bold))
+                                .tracking(18 * -0.025)
+                        }
+
+                        GeometryReader { geo in
+                            ZStack(alignment: .leading) {
+                                Capsule()
+                                    .fill(color.opacity(0.15))
+                                    .frame(height: 7)
+
+                                Capsule()
+                                    .fill(color)
+                                    .frame(width: geo.size.width * CGFloat(s.consistency) / 100, height: 7)
+                            }
+                        }
+                        .frame(height: 7)
+
                         Text(s.consistencyDescription)
-                            .font(.montserrat(size: 16))
+                            .font(.montserrat(size: 13))
                             .foregroundStyle(.secondary)
                     }
                 }
-                
-                Divider()
-                
-                // MARK: - Streaks
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Listening Streak")
-                        .font(.montserrat(size: 16, weight: .bold))
-                        .tracking(16 * -0.025)
-                        .foregroundStyle(.secondary)
-                    
-                    HStack(spacing: 18) {
-                        TrendMetric(title: "Current", value: "\(s.currentStreak) days")
-                        TrendMetric(title: "Longest", value: "\(s.longestStreak) days")
-                    }
-                }
-                
+
             } else {
                 Text("Not enough data to compute trends.")
+                    .font(.montserrat(size: 14))
                     .foregroundStyle(.secondary)
+                    .padding(.vertical, 8)
             }
         }
+    }
+}
+
+// MARK: - Card Container
+private struct TrendSectionCard<Content: View>: View {
+    var color: Color = .resonatePurple
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        content()
+            .padding()
+            .background(color.opacity(0))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(color.opacity(0.25), lineWidth: 1)
+            )
     }
 }
 
@@ -136,13 +227,15 @@ struct TrendMetric: View {
     let value: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 3) {
             Text(title)
-                .font(.montserrat(size: 12))
+                .font(.montserrat(size: 11))
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
             Text(value)
-                .font(.montserrat(size: 16, weight: .bold))
-                .tracking(16 * -0.025)
+                .font(.montserrat(size: 14, weight: .bold))
+                .tracking(14 * -0.025)
+                .lineLimit(1)
         }
     }
 }
@@ -197,7 +290,7 @@ extension TrendsCard {
         let calendar = Calendar.current
         var totals: [(date: Date, total: Int)] = []
         var cursor = firstDate
-        var lastKnownTotal = rawTotals.first!.total
+        var lastKnownTotal = rawTotals[0].total
         var index = 0
 
         while cursor <= lastDate {
@@ -210,7 +303,8 @@ extension TrendsCard {
                 totals.append((cursor, lastKnownTotal))
             }
 
-            cursor = calendar.date(byAdding: .day, value: 1, to: cursor)!
+            guard let next = calendar.date(byAdding: .day, value: 1, to: cursor) else { break }
+            cursor = next
         }
 
         guard totals.count >= 3 else { return nil }
@@ -234,7 +328,7 @@ extension TrendsCard {
         let pct = week2 > 0 ? Int(Double(week1 - week2) / Double(week2) * 100) : 0
         let weekColor: Color = pct >= 0 ? .green : .red
         let weekIcon = pct >= 0 ? "▲" : "▼"
-        
+
         // Streaks
         var longest = 0
         var current = 0

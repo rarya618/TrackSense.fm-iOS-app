@@ -31,24 +31,6 @@ struct ArtistDetailsView: View {
         }
     }
 
-    private func idealColor (
-        textColor: UIColor,
-        backgroundColor: UIColor
-    ) -> Color {
-        let white = UIColor(.resonateWhite)
-        
-        let backgroundRatio = backgroundColor.contrastRatio(with: white)
-        let textRatio = textColor.contrastRatio(with: white)
-
-        if (backgroundRatio > 4.5) {
-            return Color(backgroundColor)
-        } else if (textRatio > backgroundRatio) {
-            return Color(textColor)
-        } else {
-            return Color(backgroundColor)
-        }
-    }
-    
     private var betterTextColor: Color {
         if let textCG = artwork?.primaryTextColor,
             let bgCG = artwork?.backgroundColor {

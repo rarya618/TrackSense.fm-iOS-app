@@ -14,6 +14,14 @@ protocol SongOrTrack: PlayableMusicItem {
     var title: String { get }
     var artistName: String { get }
     var albumTitle: String? { get }
+    var artwork: Artwork? { get }
+    var genreNames: [String] { get }
+    var playCount: Int? { get }
+    var lastPlayedDate: Date? { get }
+    var libraryAddedDate: Date? { get }
+    var releaseDate: Date? { get }
+    var trackNumber: Int? { get }
+    var duration: TimeInterval? { get }
 }
 
 extension Song: SongOrTrack {}
@@ -41,7 +49,7 @@ func addToPlayNext(
         await playItem(item, playImmediately: false) { error in
             Task { await showError("Playback failed: \(error.localizedDescription)") }
         }
-        
+
         await showMessage("Playing next: " + item.title)
     }
 }
@@ -55,122 +63,129 @@ func addToQueue(
         await playItem(item, playImmediately: false, addToEndOfQueue: true) { error in
             Task { await showError("Playback failed: \(error.localizedDescription)") }
         }
-        
+
         await showMessage("Added to queue: " + item.title)
     }
 }
 
 // MARK: - Song View
 struct SongView: View {
-    let song: Song
-    
+    private enum Item {
+        case song(Song)
+        case track(Track)
+    }
+    private let item: Item
+
+    init(song: Song) { self.item = .song(song) }
+    init(track: Track) { self.item = .track(track) }
+
+    private var songOrTrack: any SongOrTrack {
+        switch item {
+        case .song(let s): return s
+        case .track(let t): return t
+        }
+    }
+
+    private var maybeSong: Song? {
+        if case .song(let s) = item { return s }
+        return nil
+    }
+
+    private var asMusicItem: any MusicItem {
+        switch item {
+        case .song(let s): return s
+        case .track(let t): return t
+        }
+    }
+
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject var authManager: AuthManager
     @EnvironmentObject var overlayManager: OverlayManager
 
     @State private var isAddPlaylistsSheetVisible: Bool = false
     @State private var isMenuVisible: Bool = false
-    @State private var cloudSongData: SongFromCloud?
-    
+    @State private var cloudData: SongFromCloud?
+
     @State private var songAlbum: Album?
     @State private var songArtist: Artist?
-    
+    @State private var cachedTextColor: Color = .resonatePurple
+
     // MARK: - Colors
     private var artworkColor: Color {
-        if let cgColor = song.artwork?.backgroundColor {
+        if let cgColor = songOrTrack.artwork?.backgroundColor {
             return Color(cgColor)
         } else {
             return Color.landingPurple
         }
     }
-    
-    private var primaryColor: Color {
-        if let cgColor = song.artwork?.primaryTextColor {
-            return Color(cgColor)
-        } else {
-            return .buttonLabelColor
-        }
-    }
 
-    private func idealColor (
-        textColor: UIColor,
-        backgroundColor: UIColor
-    ) -> Color {
-        let white = UIColor(.resonateWhite)
-        
-        let backgroundRatio = backgroundColor.contrastRatio(with: white)
-        let textRatio = textColor.contrastRatio(with: white)
-
-        if (textRatio > 4.5) {
-            return Color(textColor)
-        } else if (textRatio < backgroundRatio) {
-            return Color(backgroundColor)
-        } else {
-            return Color(textColor)
-        }
-    }
-    
-    private var betterTextColor: Color {
-        // depend on colorScheme to force recalculation on toggle
-        _ = colorScheme
-
-        if let textCG = song.artwork?.primaryTextColor,
-           let bgCG = song.artwork?.backgroundColor {
-                let textColor = UIColor(cgColor: textCG)
-                let bgColor = UIColor(cgColor: bgCG)
-                return idealColor(textColor: textColor, backgroundColor: bgColor)
+    private func computeTextColor() -> Color {
+        if let textCG = songOrTrack.artwork?.primaryTextColor,
+           let bgCG = songOrTrack.artwork?.backgroundColor {
+            let textColor = UIColor(cgColor: textCG)
+            let bgColor = UIColor(cgColor: bgCG)
+            return idealColor(textColor: textColor, backgroundColor: bgColor)
         }
         return .resonatePurple
     }
-    
+
     // MARK: - Body
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 12) {
-                    DetailsView(
-                        musicItem: song,
-                        artwork: song.artwork,
-                        title: song.title,
-                        artistName: song.artistName,
-                        albumTitle: song.albumTitle,
-                        genreNames: song.genreNames,
-                        playMusicItem: { playSong(song,
-                                                  showMessage: showMessage,
-                                                  showError: showError)},
-                        duration: song.duration,
-                        isAppleDigitalMaster: song.isAppleDigitalMaster,
-                        audioVariants: song.audioVariants,
-                        toggleMenu: toggleMenuSheet
+        ScrollView {
+            VStack(spacing: 12) {
+                DetailsView(
+                    musicItem: asMusicItem,
+                    artwork: songOrTrack.artwork,
+                    title: songOrTrack.title,
+                    artistName: songOrTrack.artistName,
+                    albumTitle: songOrTrack.albumTitle,
+                    genreNames: songOrTrack.genreNames,
+                    playMusicItem: { playCurrentItem() },
+                    duration: songOrTrack.duration,
+                    isAppleDigitalMaster: maybeSong?.isAppleDigitalMaster,
+                    audioVariants: maybeSong?.audioVariants,
+                    toggleMenu: toggleMenuSheet,
+                    goToAlbum: goToAlbum
+                )
+
+                // MARK: - Content
+                VStack(spacing: 20) {
+                    SongStatsView(
+                        song: songOrTrack,
+                        cloudData: cloudData,
+                        color: cachedTextColor
                     )
-                    
-                    // MARK: - Content
-                    VStack(spacing: 20) {
-                        SongStatsView(
-                            song: song,
-                            cloudData: cloudSongData,
-                            color: betterTextColor
-                        )
-                        
-                        ViewSpacer()
-                    }
-                    .foregroundColor(betterTextColor)
-                    .padding(.top, 24)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.resonateWhite.ignoresSafeArea(edges: .bottom))
-                    .cornerRadius(20)
+
+                    ViewSpacer()
                 }
+                .foregroundColor(cachedTextColor)
+                .padding(.top, 24)
+                .frame(maxWidth: .infinity)
+                .background(Color.resonateWhite.ignoresSafeArea(edges: .bottom))
+                .cornerRadius(20)
             }
-            .ignoresSafeArea(edges: .vertical) // extend under status bar
-            .background(artworkColor)
         }
+        .navigationDestination(item: $songAlbum) { album in
+            AlbumView(album: album)
+        }
+        .navigationDestination(item: $songArtist) { artist in
+            ArtistView(artist: artist)
+        }
+        .ignoresSafeArea(edges: .vertical) // extend under status bar
+        .background(artworkColor)
         .onAppear {
-            Task { await getSongFromRealtimeDatabase() }
+            cachedTextColor = computeTextColor()
+            if cloudData == nil {
+                Task { await loadCloudData() }
+            }
+        }
+        .onChange(of: colorScheme) { _, _ in
+            cachedTextColor = computeTextColor()
         }
         .sheet(isPresented: $isAddPlaylistsSheetVisible) {
             NavigationStack {
                 AddToPlaylist(
-                    song: song,
+                    song: maybeSong,
                     togglePlaylistsSheetVisible: toggleAddPlaylistsSheet,
                     color: .resonatePurple,
                     bgColor: .resonateWhite
@@ -180,16 +195,17 @@ struct SongView: View {
                 .background(Color.resonateWhite)
                 .presentationDetents([.medium, .large]) // allows swipe-up expansion
                 .presentationDragIndicator(.visible)
+                .presentationCornerRadius(20)
         }
         .sheet(isPresented: $isMenuVisible) {
             NavigationStack {
                 CustomMenu (
-                    artwork: song.artwork,
-                    title: song.title,
-                    subtitle: song.artistName,
-                    color: betterTextColor,
+                    artwork: songOrTrack.artwork,
+                    title: songOrTrack.title,
+                    subtitle: songOrTrack.artistName,
+                    color: cachedTextColor,
                     menuItems: getMenuForSong(
-                        song,
+                        songOrTrack,
                         showMessage: { msg in await showMessage(msg) },
                         showError: { msg in await showError(msg) },
                         toggleAddPlaylists: toggleAddPlaylistsSheet,
@@ -201,84 +217,113 @@ struct SongView: View {
             .background(Color.resonateWhite)
             .presentationDetents([.medium, .large]) // allows swipe-up expansion
             .presentationDragIndicator(.visible)
-        }
-        .navigationDestination(item: $songAlbum) { album in
-            AlbumView(album: album)
-        }
-        .navigationDestination(item: $songArtist) { artist in
-            ArtistView(artist: artist)
+            .presentationCornerRadius(20)
         }
     }
-    
+
     func goToAlbum() {
         Task {
             do {
-                let detailedSong = try await song.with([.albums])
-                if let album = detailedSong.albums?.first {
-                    await MainActor.run {
-                        songAlbum = album
+                let album: Album?
+                switch item {
+                case .song(let song):
+                    let detailed = try await song.with([.albums])
+                    album = detailed.albums?.first
+                case .track(let track):
+                    var request = MusicLibraryRequest<Song>()
+                    request.filter(matching: \.id, equalTo: track.id)
+                    let response = try await request.response()
+                    if let resolved = response.items.first {
+                        let detailed = try await resolved.with([.albums])
+                        album = detailed.albums?.first
+                    } else {
+                        album = nil
                     }
+                }
+
+                if let album {
+                    await MainActor.run { songAlbum = album }
                 } else {
                     await showError("Album not found")
                 }
             } catch {
                 await showError("Failed to load album")
             }
-            
-            toggleMenuSheet()
+
+            await MainActor.run { isMenuVisible = false }
         }
     }
-    
+
     func goToArtist() {
         Task {
             do {
-                let detailedSong = try await song.with([.artists])
-                if let artist = detailedSong.artists?.first {
-                    await MainActor.run {
-                        songArtist = artist
+                let artist: Artist?
+                switch item {
+                case .song(let song):
+                    let detailed = try await song.with([.artists])
+                    artist = detailed.artists?.first
+                case .track(let track):
+                    var request = MusicLibraryRequest<Song>()
+                    request.filter(matching: \.id, equalTo: track.id)
+                    let response = try await request.response()
+                    if let resolved = response.items.first {
+                        let detailed = try await resolved.with([.artists])
+                        artist = detailed.artists?.first
+                    } else {
+                        artist = nil
                     }
+                }
+
+                if let artist {
+                    await MainActor.run { songArtist = artist }
                 } else {
                     await showError("Artist not found")
                 }
             } catch {
                 await showError("Failed to load artist")
             }
-            
-            toggleMenuSheet()
+
+            await MainActor.run { isMenuVisible = false }
         }
     }
-    
+
+    func playCurrentItem() {
+        Task {
+            switch item {
+            case .song(let song):
+                await playItem(song) { error in
+                    Task { await showError("Playback failed: \(error.localizedDescription)") }
+                }
+            case .track(let track):
+                await playItem(track) { error in
+                    Task { await showError("Playback failed: \(error.localizedDescription)") }
+                }
+            }
+        }
+    }
+
     func toggleMenuSheet() {
         isMenuVisible.toggle()
     }
-    
+
     func toggleAddPlaylistsSheet() {
         isAddPlaylistsSheetVisible.toggle()
     }
-    
-    /// Gets the song from the Firebase Realtime Database
-    func getSongFromRealtimeDatabase() async {
+
+    func loadCloudData() async {
         guard let userID = authManager.userID else {
-            Task {
-                await showError("Not logged in")
-            }
+            Task { await showError("Not logged in") }
             return
         }
-        
-        cloudSongData = await getItemFromDatabase(
-            id: song.id,
+
+        cloudData = await getItemFromDatabase(
+            id: songOrTrack.id,
             userID: userID,
             type: "songs",
             showError: { msg in await showError(msg) }
         )
     }
-    
-    func formatTime(_ time: TimeInterval) -> String {
-        let minutes = Int(time) / 60
-        let seconds = Int(time) % 60
-        return String(format: "%d:%02d", minutes, seconds)
-    }
-    
+
     // MARK: - Show Overlays
     func showMessage(_ message: String) async {
         await displayMessage(message) { msg in
@@ -298,7 +343,7 @@ func displayMessage(
     setMessage: (String?) -> Void
 ) async {
     setMessage(message)
-    
+
     // Auto-hide overlay after 1.5 seconds
     try? await Task.sleep(nanoseconds: 1_500_000_000)
     await MainActor.run {
@@ -307,4 +352,3 @@ func displayMessage(
         }
     }
 }
-

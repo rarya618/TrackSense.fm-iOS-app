@@ -14,6 +14,7 @@ struct SettingsView: View {
 
     @AppStorage("lastStatsSync") var lastStatsSync: Date?
     @AppStorage("autoSync") var autoSync: Bool = true
+    @AppStorage("syncOnRefresh") var syncOnRefresh: Bool = true
 
     private var appVersion: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—"
@@ -60,6 +61,18 @@ struct SettingsView: View {
                     Toggle(isOn: $autoSync) {
                         Label {
                             Text("Auto-sync on launch")
+                                .font(.montserrat(size: 15, weight: .medium))
+                                .tracking(15 * -0.025)
+                        } icon: {
+                            Image(systemName: "arrow.clockwise.icloud")
+                                .foregroundStyle(Color.resonatePurple)
+                        }
+                    }
+                    .tint(.resonatePurple)
+                    
+                    Toggle(isOn: $syncOnRefresh) {
+                        Label {
+                            Text("Sync on refresh")
                                 .font(.montserrat(size: 15, weight: .medium))
                                 .tracking(15 * -0.025)
                         } icon: {

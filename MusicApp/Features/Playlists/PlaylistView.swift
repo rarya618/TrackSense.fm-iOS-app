@@ -148,11 +148,12 @@ struct PlaylistView: View {
                     .background(Color.resonateWhite)
                     .presentationDetents([.medium, .large]) // allows swipe-up expansion
                     .presentationDragIndicator(.visible)
+                    .presentationCornerRadius(20)
             }
             .ignoresSafeArea(edges: .vertical) // extend under status bar
             .background(artworkColor)
             .navigationDestination(item: $selectedTrack) { track in
-                TrackView(track: track)
+                SongView(track: track)
             }
             .onAppear {
                 Task {

@@ -102,6 +102,7 @@ struct AddToPlaylist: View {
                 .presentationDragIndicator(.visible)
                 .presentationBackground(.ultraThinMaterial)
                 .presentationContentInteraction(.automatic)
+                .presentationCornerRadius(20)
                 .presentationCompactAdaptation(.sheet)
         }
     }

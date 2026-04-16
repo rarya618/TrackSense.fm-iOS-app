@@ -21,6 +21,7 @@ struct MarqueeText: View {
     @State private var textWidth: CGFloat = 0
     @State private var startTime: Date = .now
     @State private var isAnimating: Bool = false
+    @State private var animationWorkItem: DispatchWorkItem? = nil
     
     private var needsScrolling: Bool {
         textWidth > containerWidth
@@ -37,29 +38,59 @@ struct MarqueeText: View {
     
     var body: some View {
         GeometryReader { geo in
-            TimelineView(.animation) { context in
-                let offset = currentOffset(at: context.date)
-                HStack(spacing: 40) {
-                    Text(text)
-                        .font(font)
-                        .tracking(tracking)
-                        .foregroundColor(color)
-                        .fixedSize()
-                    if needsScrolling {
+            Group {
+                if isAnimating && needsScrolling {
+                    TimelineView(.animation) { context in
+                        let offset = currentOffset(at: context.date)
+                        HStack(spacing: 40) {
+                            Text(text)
+                                .font(font)
+                                .tracking(tracking)
+                                .foregroundColor(color)
+                                .fixedSize()
+                            if needsScrolling {
+                                Text(text)
+                                    .font(font)
+                                    .tracking(tracking)
+                                    .foregroundColor(color)
+                                    .fixedSize()
+                            }
+                        }
+                        .offset(x: offset)
+                    }
+                } else {
+                    // Static rendering when not animating or not needed
+                    HStack(spacing: 40) {
                         Text(text)
                             .font(font)
                             .tracking(tracking)
                             .foregroundColor(color)
                             .fixedSize()
+                        if needsScrolling {
+                            Text(text)
+                                .font(font)
+                                .tracking(tracking)
+                                .foregroundColor(color)
+                                .fixedSize()
+                        }
                     }
+                    .offset(x: 0)
                 }
-                .offset(x: offset)
             }
             .clipped()
             .onAppear {
                 containerWidth = geo.size.width
             }
+            .onChange(of: geo.size) { _, newSize in
+                containerWidth = newSize.width
+            }
+            .onDisappear {
+                animationWorkItem?.cancel()
+                animationWorkItem = nil
+            }
             .onChange(of: text) {
+                animationWorkItem?.cancel()
+                animationWorkItem = nil
                 isAnimating = false
                 textWidth = 0
             }
@@ -73,11 +104,17 @@ struct MarqueeText: View {
                         Color.clear.onAppear {
                             textWidth = textGeo.size.width
                             if textWidth > containerWidth {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                                let workItem = DispatchWorkItem {
                                     startTime = .now
                                     isAnimating = true
                                 }
+                                animationWorkItem = workItem
+                                DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: workItem)
                             }
+                        }
+                        .onChange(of: textGeo.size) { _, _ in
+                            // Recalculate text width on size changes
+                            textWidth = textGeo.size.width
                         }
                     })
                     .id(text)
@@ -85,3 +122,4 @@ struct MarqueeText: View {
         }
     }
 }
+

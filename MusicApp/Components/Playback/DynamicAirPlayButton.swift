@@ -17,6 +17,7 @@ struct DynamicAirPlayButton: View {
     
     @State private var currentOutputIcon = "airplayaudio"
     @State private var routeID = UUID()
+    @State private var routeObserver: Any? = nil
     
     var body: some View {
         ZStack {
@@ -40,13 +41,19 @@ struct DynamicAirPlayButton: View {
         .id(routeID) // forces rebuild on route change
         .onAppear {
             updateCurrentRoute()
-            NotificationCenter.default.addObserver(
+            routeObserver = NotificationCenter.default.addObserver(
                 forName: AVAudioSession.routeChangeNotification,
                 object: nil,
                 queue: .main
             ) { _ in
                 updateCurrentRoute()
                 routeID = UUID()
+            }
+        }
+        .onDisappear {
+            if let observer = routeObserver {
+                NotificationCenter.default.removeObserver(observer)
+                routeObserver = nil
             }
         }
     }

@@ -9,6 +9,44 @@ import SwiftUI
 import MusicKit
 
 struct SessionsView: View {
+    var color: Color = .primary
+    var bgColor: Color = Color(.systemBackground)
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Spacer()
+
+            Image(systemName: "waveform.circle")
+                .font(.system(size: 64))
+                .foregroundStyle(color.opacity(0.25))
+
+            VStack(spacing: 8) {
+                Text("Coming Soon")
+                    .font(.montserrat(size: 20, weight: .bold))
+
+                Text("Sessions are on their way.")
+                    .font(.montserrat(size: 15))
+                    .foregroundStyle(color.opacity(0.5))
+            }
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .foregroundStyle(color)
+        .background(bgColor)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("Sessions")
+                    .font(.montserrat(size: 17, weight: .bold))
+                    .tracking(17 * -0.025)
+            }
+        }
+    }
+}
+
+/*
+struct SessionsView_Full: View {
     @EnvironmentObject var sessionManager: SessionManager
 
     var color: Color = .primary
@@ -58,7 +96,11 @@ struct SessionsView: View {
             refreshTask = Task {
                 while !Task.isCancelled {
                     await fetchCurrentSong()
-                    try? await Task.sleep(nanoseconds: 1_000_000_000)
+                    do {
+                        try await Task.sleep(nanoseconds: 1_000_000_000)
+                    } catch {
+                        break
+                    }
                 }
             }
         }
@@ -248,3 +290,4 @@ struct SessionsView: View {
         sessionManager.startSession(currentSong: song)
     }
 }
+*/

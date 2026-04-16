@@ -362,7 +362,7 @@ struct StatsView: View {
                             )
                             .tag(2)
                         }
-                        .frame(height: 395)
+                        .frame(height: 405)
                         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     }
                     
@@ -391,12 +391,15 @@ struct StatsView: View {
                 .environmentObject(authManager)
                 .environmentObject(songLibraryManager)
                 .presentationDragIndicator(.visible)
+                .presentationCornerRadius(20)
         }
         .sheet(isPresented: $isLibraryHoursGraphVisible) {
             LibraryHoursSheet(cloudData: cloudLibraryPlayedHoursData)
+                .presentationCornerRadius(20)
         }
         .sheet(isPresented: $isTotalPlaysSheetVisible) {
             TotalPlaysSheet(cloudData: cloudTotalPlayedData)
+                .presentationCornerRadius(20)
         }
         .navigationDestination(item: $selectedSong) { SongView(song: $0) }
         .navigationDestination(item: $selectedAlbum) { AlbumView(album: $0) }

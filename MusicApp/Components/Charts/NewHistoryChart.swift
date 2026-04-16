@@ -37,7 +37,8 @@ struct NewHistoryChart: View {
             let dateString = formatter.string(from: currentDate)
             let value = history[dateString]?[prop]
             result.append((date: currentDate, value: value))
-            currentDate = Calendar.current.date(byAdding: .day, value: 1, to: currentDate)!
+            guard let next = Calendar.current.date(byAdding: .day, value: 1, to: currentDate) else { break }
+            currentDate = next
         }
         
         return result

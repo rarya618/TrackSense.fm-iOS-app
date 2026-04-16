@@ -1,6 +1,6 @@
 //
 //  AuthManager.swift
-//  Resonate
+//  TrackSense
 //
 //  Created by Russal Arya on 10/11/2025.
 //

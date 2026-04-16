@@ -25,6 +25,7 @@ struct PlayerStatsView: View {
                         cloudData: cloudData,
                         color: color
                     )
+                    .padding(.vertical, 24)
                     
                     Spacer()
                 }
@@ -33,14 +34,16 @@ struct PlayerStatsView: View {
             .background(bgColor)
         }
 //        .navigationTitle("Stats")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Text("Stats")
-                    .font(.montserrat(size: 17, weight: .bold))
-                    .tracking(17 * -0.025)
-                    
-            }
-        }
+        .toolbar(.hidden, for: .navigationBar)
+//        .navigationBarTitleDisplayMode(.inline)
+//        .toolbar {
+//            ToolbarItem(placement: .principal) {
+//                Text("Stats")
+//                    .font(.montserrat(size: 17, weight: .bold))
+//                    .tracking(17 * -0.025)
+//                    
+//            }
+//        }
     }
 }
+
